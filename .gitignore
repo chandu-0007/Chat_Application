@@ -1,0 +1,73 @@
+# --------------------------------------
+# Global
+# --------------------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+.DS_Store
+Thumbs.db
+*.log
+*.tsbuildinfo
+
+# Env files (VERY IMPORTANT)
+.env
+.env.*
+.env.local
+.env.development
+.env.production
+.env.test
+
+# --------------------------------------
+# Backend (TypeScript + Express/Node)
+# --------------------------------------
+/Backend/dist
+/Backend/build
+/Backend/node_modules
+/Backend/.env
+/Backend/.env.*
+/Backend/prisma/*.db
+/Backend/prisma/migrations/**/README.md
+
+# Ignore Prisma Client Cache
+/Backend/node_modules/.prisma
+
+# --------------------------------------
+# Frontend (Next.js)
+# --------------------------------------
+/Frontend/.next
+/Frontend/out
+/Frontend/.env
+/Frontend/.env.*
+/Frontend/node_modules
+
+# Ignore Next.js Cache
+/Frontend/.next/cache
+
+# Ignore Turbo Repo Cache (if used)
+.turbo/
+turbo.json
+
+# Ignore Vercel deployment folder
+.vercel
+
+# --------------------------------------
+# Editor Specific
+# --------------------------------------
+.vscode/
+.idea/
+
+# --------------------------------------
+# System Files
+# --------------------------------------
+*.swp
+*.swo
+
+# --------------------------------------
+# Git Specific
+# --------------------------------------
+# Avoid adding inside nested repo
+Frontend/.git
+Backend/.git

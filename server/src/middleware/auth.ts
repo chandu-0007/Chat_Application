@@ -7,9 +7,9 @@ export default function auth(req : Request , res : Response  , next : NextFuncti
         status : false 
     })
     try{
-     const secret = process.env.JWT_SCERET  || "adfasdasdfkjsd;";
-    const decoded = jwt.verify(token , secret) as string;
-    req.user = decoded ; 
+     const secret = process.env.JWT_SECRET || "mysupersecretkey";
+    const decoded = jwt.verify(token , secret) as {id:string};
+    req.user = decoded.id ; 
     next();
     }catch(err){
                 return res.status(403).json({ message: "Invalid token" });

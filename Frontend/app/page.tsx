@@ -3,14 +3,13 @@ import Link from "next/link";
 import GetToken from "./lib/getToken"
 export default async function Home() {
   const token = await GetToken();
+  if(token){
+        redirect("/dashboard")
+  }
   return (
-    <div>
-      {token != null ? <>
-        <div className="bg-white text-lg text-black ">
-          Landing Page </div></> : <>
-            <>
-            <div className="text-lg flex items-center text-white bg-black ">  Login page </div> </>
-      </>}
-    </div>
+       <>
+        <div className="w-screen h-screen text-2xl text-black "> Landing Page </div>
+       </>
+     
   )
 }

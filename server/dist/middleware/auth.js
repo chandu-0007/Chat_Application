@@ -7,9 +7,9 @@ export default function auth(req, res, next) {
             status: false
         });
     try {
-        const secret = process.env.JWT_SCERET || "adfasdasdfkjsd;";
+        const secret = process.env.JWT_SECRET || "mysupersecretkey";
         const decoded = jwt.verify(token, secret);
-        req.user = decoded;
+        req.user = decoded.id;
         next();
     }
     catch (err) {

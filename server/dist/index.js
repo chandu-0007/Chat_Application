@@ -6,13 +6,18 @@ import http from "http";
 import { Server } from 'socket.io';
 import cookieParser from "cookie-parser";
 import socketlogic from './sockets/socket.js';
+import ChatRouter from "./routers/chats.js";
 dotenv.config();
 const app = Express();
 app.use(Express.json());
-app.use(cors());
+app.use(cors({
+    origin: "http://localhost:3000",
+    credentials: true
+}));
 app.use(cookieParser());
 const PORT = process.env.PORT || 3003;
 app.use('/user', userRouter);
+app.use('/chat', ChatRouter);
 const server = http.createServer(app);
 socketlogic(server);
 server.listen(PORT, () => {

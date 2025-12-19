@@ -7,7 +7,7 @@ const prisma = new PrismaClient()
 router.use(auth)
 
 //get all the users chat previous 
-router.get("/chats" , async(req : Request , res : Response ) =>{
+router.get("/getchats" , async(req : Request , res : Response ) =>{
        try{
           const PrivacyChats = await prisma.chat.findMany({ where :{
              OR :[
@@ -40,7 +40,7 @@ router.get("/chats" , async(req : Request , res : Response ) =>{
 
         return res.status(200).json({
               status : true , 
-              ListOFchats , 
+              ListOFchats, 
               GroupChats 
         })
        }catch (err){
@@ -78,7 +78,8 @@ router.post("/chat-privacy", async (req: Request, res: Response) => {
 
         if(chat){
              return res.status(200).json({
-                status : true  , 
+                status : false,
+                chatId: chat.id, 
                 message  : "chat is aleady created "
              })
         }
@@ -100,3 +101,38 @@ router.post("/chat-privacy", async (req: Request, res: Response) => {
         })
     }
 });
+
+
+router.get("/messages/:chatId", async (req: Request, res: Response) => {
+    const userId = req.user;
+    const chatId = req.params.chatId;
+    if (!chatId) return res.status(400).json({ message: "chatId is required", status: false });
+    try {
+        const message = await prisma.message.findMany({
+            where: {
+                chatId: chatId
+            },
+            select: {
+                senderId: true,
+                text: true,
+            }
+        });
+
+        const messages = message.map((each) => ({
+            text: each.text,
+            sentByUser: each.senderId === userId
+        }));
+
+        return res.status(200).json({
+            status: true,
+            messages
+        });
+    } catch (err) {
+        return res.status(500).json({
+            message: "server error",
+            status: false
+        });
+    }
+});
+
+export default router ; 

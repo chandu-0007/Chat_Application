@@ -5,7 +5,7 @@ const router = Router();
 const prisma = new PrismaClient();
 router.use(auth);
 //get all the users chat previous 
-router.get("/chats", async (req, res) => {
+router.get("/getchats", async (req, res) => {
     try {
         const PrivacyChats = await prisma.chat.findMany({ where: {
                 OR: [
@@ -72,7 +72,8 @@ router.post("/chat-privacy", async (req, res) => {
         });
         if (chat) {
             return res.status(200).json({
-                status: true,
+                status: false,
+                chatId: chat.id,
                 message: "chat is aleady created "
             });
         }
@@ -95,4 +96,36 @@ router.post("/chat-privacy", async (req, res) => {
         });
     }
 });
+router.get("/messages/:chatId", async (req, res) => {
+    const userId = req.user;
+    const chatId = req.params.chatId;
+    if (!chatId)
+        return res.status(400).json({ message: "chatId is required", status: false });
+    try {
+        const message = await prisma.message.findMany({
+            where: {
+                chatId: chatId
+            },
+            select: {
+                senderId: true,
+                text: true,
+            }
+        });
+        const messages = message.map((each) => ({
+            text: each.text,
+            sentByUser: each.senderId === userId
+        }));
+        return res.status(200).json({
+            status: true,
+            messages
+        });
+    }
+    catch (err) {
+        return res.status(500).json({
+            message: "server error",
+            status: false
+        });
+    }
+});
+export default router;
 //# sourceMappingURL=chats.js.map

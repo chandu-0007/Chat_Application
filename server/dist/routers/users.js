@@ -3,14 +3,10 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
 import dotenv from "dotenv";
+import auth from "../middleware/auth.js";
 dotenv.config();
 const prisma = new PrismaClient();
 const router = Router();
-// Test route
-router.get("/", (req, res) => {
-    res.send("user route is working");
-    console.log("user route is called");
-});
 // REGISTER
 router.post("/register", async (req, res) => {
     const userInfo = req.body;
@@ -39,7 +35,7 @@ router.post("/register", async (req, res) => {
                 email: email
             }
         });
-        const secret = process.env.JWT_SCERET || "adfasdasdfkjsd;";
+        const secret = process.env.JWT_SECRET;
         console.log(secret);
         if (!secret) {
             return res.status(500).json({
@@ -50,8 +46,8 @@ router.post("/register", async (req, res) => {
         const token = jwt.sign({ id: newUser.id }, secret, { expiresIn: "7d" });
         res.cookie("token", token, {
             httpOnly: true,
-            secure: true,
-            sameSite: "strict",
+            secure: false,
+            sameSite: "lax",
             maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
         });
         return res.status(201).json({
@@ -95,7 +91,7 @@ router.post("/login", async (req, res) => {
                 message: "invalid password"
             });
         }
-        const secret = process.env.JWT_SECRETn || "adfasdasdfkjsd;";
+        const secret = process.env.JWT_SECRET;
         if (!secret) {
             return res.status(500).json({
                 status: false,
@@ -105,8 +101,8 @@ router.post("/login", async (req, res) => {
         const token = jwt.sign({ id: Existuser.id }, secret, { expiresIn: "7d" });
         res.cookie("token", token, {
             httpOnly: true,
-            secure: true,
-            sameSite: "strict",
+            secure: false,
+            sameSite: "lax",
             maxAge: 7 * 24 * 60 * 60 * 1000
         });
         return res.status(200).json({
@@ -134,11 +130,56 @@ router.put("/profile", async (req, res) => {
     if (!email && !newpassword)
         return res.status(401).json({
             status: false,
-            message: "the usetname or new password is requisred "
+            message: " "
         });
     try {
     }
     catch (err) {
+    }
+});
+// get userinfo 
+router.get("/me", auth, async (req, res) => {
+    const userId = req.user;
+    try {
+        const userinfo = await prisma.user.findFirst({ where: {
+                id: userId
+            },
+            select: {
+                username: true,
+                email: true,
+                profileUrl: true
+            } });
+        return res.status(200).json({
+            status: true,
+            message: "user Information ",
+            userinfo
+        });
+    }
+    catch (err) {
+        return res.json({
+            status: false,
+            message: "server error "
+        });
+    }
+});
+router.get("/", auth, async (req, res) => {
+    try {
+        const allusers = await prisma.user.findMany({
+            where: {},
+            select: {
+                username: true,
+                profileUrl: true
+            }
+        });
+        return res.status(200).json({
+            allusers,
+            message: "list of users "
+        });
+    }
+    catch (err) {
+        return res.status(500).json({
+            message: "internal server error"
+        });
     }
 });
 export default router;

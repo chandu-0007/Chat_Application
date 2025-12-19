@@ -2,8 +2,7 @@
 
 import { useState } from "react"
 import axios from "axios"
-import { Signika } from "next/font/google"
-import { useRouter } from "next/navigation"
+import { redirect, useRouter } from "next/navigation"
 export default function login() {
   const [SignIn, SetsignIn] = useState({
     email: "",
@@ -18,12 +17,14 @@ export default function login() {
     })
   }
   const OnSubmit = async () => {
-    const res = await axios.post("http://localhost:3003/user/login", SignIn)
+    const res = await axios.post("http://localhost:3003/user/login", SignIn ,{
+      withCredentials: true
+    })
     const data = res.data;
     console.log(data);
-    if (data.status ) {
+    if (data.status) {
       alert("login successful")
-      router.push("/dashboard")
+      redirect("/dashboard");
     } else {
       alert("login failed")
       SetsignIn({
@@ -55,6 +56,12 @@ export default function login() {
               className="bg-white  w-full  text-black rounded-lg p-1 mt-2 items-center justify-center
                 hover:bg-gray-300"
                  onClick={()=>{OnSubmit()}}>Submit</button></div>
+
+                <div>
+                   Doesn't have an account <button className="border-none text-gray-500 hover:text-lg" 
+                   onClick={()=>{redirect("/signup")}}
+                   >register </button> here 
+                </div>
           </div>
         </div>
 

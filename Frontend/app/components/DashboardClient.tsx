@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSocket } from "../components/SocketProvider";
 import UserCard from "./UserCard";
 import axios from "axios";
@@ -8,6 +8,7 @@ import MessageCard from "./MessageCard";
 import { json, text } from "stream/consumers";
 export default function DashboardClient({ token }: { token: string }) {
     const { socket, connectSocket, disconnectSocket } = useSocket();
+    const messagesEndRef = useRef<HTMLDivElement | null>(null);
     const [chats, Setchats] = useState<any[]>([]);
     const [currentUser, SetCurrentUser] = useState<{
         chatId: string,
@@ -42,6 +43,9 @@ export default function DashboardClient({ token }: { token: string }) {
         }
     }
 
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [Messages]);
 
     useEffect(() => {
         if (token) {
@@ -96,20 +100,20 @@ export default function DashboardClient({ token }: { token: string }) {
         }
     }
 
-    useEffect(()=>{
-        socket?.on("message" ,(data)=>{
+    useEffect(() => {
+        socket?.on("message", (data) => {
             console.log(data);
-        SetMessages((prevs)=>[...prevs,{text:data.text , sentByUser : false}])
-        })  
+            SetMessages((prevs) => [...prevs, { text: data.text, sentByUser: false }])
+        })
 
-    } , [socket])
+    }, [socket])
 
     const SendMsg = () => {
         console.log(currentUser?.chatId);
         const sendPlayLoad = {
-            text : inputmsg , 
-            chatId : currentUser?.chatId,
-            chatName : currentUser?.chatName
+            text: inputmsg,
+            chatId: currentUser?.chatId,
+            chatName: currentUser?.chatName
         }
         socket?.emit("message", sendPlayLoad);
         if (inputmsg != "") {
@@ -119,7 +123,7 @@ export default function DashboardClient({ token }: { token: string }) {
             }
             ])
         }
-       setinputmsg("");
+        setinputmsg("");
     }
     return (
         <div className="w-screen h-screen bg-black p-4 px-6">
@@ -156,7 +160,7 @@ export default function DashboardClient({ token }: { token: string }) {
                         {chats.length == 0 && <div className="text-gray-400 flex  justify-center items-center ">..No chats.. </div>}
                         {chats.length != 0 && <div className="text-white ">
                             <div className="text-white">
-                                {chats.map((child , index) => (
+                                {chats.map((child, index) => (
                                     <div key={index}
                                         className="flex items-center gap-2 pl-2 h-8 hover:bg-neutral-600 cursor-pointer"
                                         onClick={() => getmessgaes(child.chatId, child.chatName)}
@@ -199,8 +203,14 @@ export default function DashboardClient({ token }: { token: string }) {
 
                         {/* Messages Area */}
                         <div className="flex-1 overflow-y-auto p-4 space-y-3">
-                            {Messages.map((each) => <MessageCard text={each.text}
-                                sentByUser={each.sentByUser} />)}
+                            {Messages.map((each, index) => (
+                                <MessageCard
+                                    key={index}
+                                    text={each.text}
+                                    sentByUser={each.sentByUser}
+                                />
+                            ))}
+                            <div ref={messagesEndRef} />
                         </div>
 
                         {/* Input Area */}
@@ -209,7 +219,7 @@ export default function DashboardClient({ token }: { token: string }) {
                                 type="text"
                                 name="inputmsg"
                                 value={inputmsg}
-                                onChange={(e)=>setinputmsg(e.target.value)}
+                                onChange={(e) => setinputmsg(e.target.value)}
                                 placeholder="Type a message..."
                                 className="flex-1 h-9 px-3 rounded-md bg-neutral-800 text-white outline-none"
                             />

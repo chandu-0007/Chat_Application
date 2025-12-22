@@ -34,7 +34,6 @@ export default function socketlogic(server: HttpServer) {
     })
     io.on("connection", (socket) => {
         onlineUser.set(socket.data.userId, socket);
-        console.log(onlineUser.size);
         socket.on("message", async (playload) => {
             console.log(playload);
             try{
@@ -49,9 +48,6 @@ export default function socketlogic(server: HttpServer) {
                 user = chat.user1Id == socket.data.userId ? chat.user2Id : chat.user1Id ; 
                 sendersocket = onlineUser.get(user)
             }
-            console.log(chat);
-            console.log(socket.data.userId);
-            console.log(user);
             await prisma.message.create({
                 data :{
                     text : playload.text , 
@@ -68,9 +64,64 @@ export default function socketlogic(server: HttpServer) {
             }
           
         }catch(err){
-
+          socket.emit("message" , {
+             status : false , 
+             message : "Internal server error"
+          })
         }
         })
+         
+        socket.on("group-chat" , async(playload)=>{
+           const {text  , groupId } = playload 
+           if(!groupId) return 
+           try{
+            const groupMember = await prisma.groupMember.findMany({
+                where : {
+                    groupId : groupId
+                },
+                select:{
+                    userId : true
+                }
+            })
+            if(groupMember.length ==0 ){
+                socket.emit("group-chat" , {
+                    status  : false  , 
+                    message  : "There is no group exist"
+                })
+            }
+             let MembersSockets  : IOSocket[] = [];
+             for(let i =0 ; i< groupMember.length ; i++){
+                 const member = groupMember[i];
+                 if (!member || !member.userId || member.userId == socket.data.userId) continue;
+                 const sock = onlineUser.get(member.userId);
+                 if (sock) {
+                     MembersSockets.push(sock);
+                 }
+             }
+            await  prisma.message.create({
+                data : {
+                  senderId  : socket.data.userId,
+                  groupId :groupId , 
+                  text : text 
+                }
+            })
+          if(MembersSockets.length > 0){ 
+            for (const s of MembersSockets) {
+                s.emit("group-chat" , {
+                    status : true , 
+                    text  : text
+                })
+            }
+          }
+            
+           }catch(err){
+             socket.emit("message" , {
+             status : false , 
+             message : "Internal server error"
+          })
+           }
+        }
+    )
         socket.on("disconnect", () => {
             console.log("dissconnected socket id is " + socket.id)
             onlineUser.delete(socket.data.userId);

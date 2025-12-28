@@ -148,12 +148,19 @@ router.post("/login", async (req: Request, res: Response) => {
 });
 
 // Logout 
-router.post("/logout", (req: Request, res: Response) => {
-  res.clearCookie("token");
+router.get("/logout", (req: Request, res: Response) => {
+  try {
+      res.clearCookie("token");
   return res.json({
     status: true,
     message: "Logged out successfully"
   });
+  } catch (error) {
+    return res.json({
+      status : false , 
+      message : "internal server errot"
+    })
+  }
 });
 
 

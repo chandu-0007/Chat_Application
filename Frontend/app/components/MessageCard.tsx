@@ -10,7 +10,7 @@ const MessageCard = ({ text, sentByUser }:{
         className={`max-w-[70%] px-4 py-2 rounded-xl text-sm
           ${
             sentByUser
-              ? "bg-white text-black rounded-br-none"
+              ? "bg-purple-500 text-white rounded-br-none"
               : "bg-neutral-700 text-white rounded-bl-none"
           }`}
       >

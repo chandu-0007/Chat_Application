@@ -189,7 +189,7 @@ router.post("join-group/:groupId" , async(req : Request,res : Response) =>{
     const groupId = req.params.groupId
     if(!groupId){
         return res.json({
-            status : false , 
+            status : false ,
             message : "Doesn't get the groupId"
         })
     }

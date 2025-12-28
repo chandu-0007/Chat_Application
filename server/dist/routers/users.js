@@ -118,12 +118,20 @@ router.post("/login", async (req, res) => {
     }
 });
 // Logout 
-router.post("/logout", (req, res) => {
-    res.clearCookie("token");
-    return res.json({
-        status: true,
-        message: "Logged out successfully"
-    });
+router.get("/logout", (req, res) => {
+    try {
+        res.clearCookie("token");
+        return res.json({
+            status: true,
+            message: "Logged out successfully"
+        });
+    }
+    catch (error) {
+        return res.json({
+            status: false,
+            message: "internal server errot"
+        });
+    }
 });
 router.put("/profile", async (req, res) => {
     const { email, newpassword } = req.body;

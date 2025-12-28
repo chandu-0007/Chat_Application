@@ -127,5 +127,93 @@ router.get("/messages/:chatId", async (req, res) => {
         });
     }
 });
+router.post("create-room", async (req, res) => {
+    const userId = req.user;
+    const groupName = req.body.groupName;
+    if (!groupName || !userId) {
+        return res.json({
+            status: false,
+            message: "Doesn't get the group Name "
+        });
+    }
+    try {
+        const ExistedGroup = await prisma.group.findFirst({
+            where: {
+                name: groupName,
+                adminId: userId
+            }
+        });
+        if (!ExistedGroup) {
+            const NewGroup = await prisma.group.create({
+                data: {
+                    name: groupName,
+                    adminId: userId
+                }
+            });
+            await prisma.groupMember.create({
+                data: {
+                    groupId: NewGroup.id,
+                    userId: userId
+                }
+            });
+            return res.status(200).json({
+                status: true,
+                groupId: NewGroup.id,
+                message: "successfully created the group"
+            });
+        }
+        return res.json({
+            status: false,
+            message: "The Group name is already used by you"
+        });
+    }
+    catch (err) {
+        return res.status(500).json({
+            status: false,
+            message: "Internal server error"
+        });
+    }
+});
+// join in the group 
+router.post("join-group/:groupId", async (req, res) => {
+    const userId = req.user;
+    const groupId = req.params.groupId;
+    if (!groupId) {
+        return res.json({
+            status: false,
+            message: "Doesn't get the groupId"
+        });
+    }
+    try {
+        const GroupFound = await prisma.group.findFirst({
+            where: {
+                id: groupId
+            }
+        });
+        if (!GroupFound) {
+            return res.json({
+                status: false,
+                message: "the Group is not found"
+            });
+        }
+        await prisma.groupMember.create({
+            data: {
+                userId: userId,
+                groupId: groupId
+            }
+        });
+        return res.json({
+            status: true,
+            groupId: GroupFound.id,
+            message: "Joined the group successfully"
+        });
+    }
+    catch (err) {
+        return res.status(500).json({
+            status: false,
+            message: "Internal server error"
+        });
+    }
+});
 export default router;
 //# sourceMappingURL=chats.js.map

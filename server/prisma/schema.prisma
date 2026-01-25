@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
   provider = "prisma-client-js"
@@ -10,6 +5,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url  	    = env("DATABASE_URL")
   // Connection URL moved to prisma.config.ts per Prisma 7+; pass `adapter` for a direct DB connection
   // or `accelerateUrl` when using Accelerate to the PrismaClient constructor.
 }
@@ -56,7 +52,7 @@ model Group {
   name       String
   adminId    String
   createdAt  DateTime      @default(now())
-
+  description String       @default("")
   admin        User         @relation("GroupCreator", fields: [adminId], references: [id])
   members      GroupMember[]
   messages     Message[]    @relation("GroupMessages")

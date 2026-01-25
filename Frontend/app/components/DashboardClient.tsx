@@ -16,6 +16,9 @@ export default function DashboardClient({ token }: { token: string }) {
         chatId: string,
         chatName: string
     }>();
+
+    // all groups 
+    const [Groups , SetGroups] = useState();
     const [GroupCreate, SetGroupCreate] = useState<boolean>(false);
     const [Users, SetUsers] = useState<{
         username: string,
@@ -196,6 +199,7 @@ export default function DashboardClient({ token }: { token: string }) {
                                 ))}
                             </div>
                         </div>}
+                        <div className="text-white font-semibold  text-xl "> Groups </div>
                         <div className="text-white font-semibold  text-xl "> List of Users </div>
                         <div className="text-white">
                             {Users.map((child) => (

@@ -127,7 +127,45 @@ router.get("/messages/:chatId", async (req, res) => {
         });
     }
 });
-router.post("create-room", async (req, res) => {
+router.get("/groups", async (req, res) => {
+    try {
+        const cursor = req.query.cursor
+            ? req.query.cursor.toString()
+            : undefined;
+        const groups = await prisma.group.findMany({
+            take: 10,
+            skip: cursor ? 1 : 0,
+            ...(cursor && {
+                cursor: { id: cursor }
+            }),
+            orderBy: { id: "asc" },
+            select: {
+                id: true,
+                name: true,
+                description: true,
+                _count: {
+                    select: {
+                        members: true
+                    }
+                }
+            }
+        });
+        return res.status(200).json({
+            status: true,
+            groups,
+            nextCursor: groups.length
+                ? groups[groups.length - 1].id
+                : null
+        });
+    }
+    catch (err) {
+        return res.status(500).json({
+            status: false,
+            message: "Internal server error"
+        });
+    }
+});
+router.post("/create-group", async (req, res) => {
     const userId = req.user;
     const groupName = req.body.groupName;
     if (!groupName || !userId) {
@@ -175,7 +213,7 @@ router.post("create-room", async (req, res) => {
     }
 });
 // join in the group 
-router.post("join-group/:groupId", async (req, res) => {
+router.post("/join-group/:groupId", async (req, res) => {
     const userId = req.user;
     const groupId = req.params.groupId;
     if (!groupId) {

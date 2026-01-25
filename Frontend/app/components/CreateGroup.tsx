@@ -3,7 +3,7 @@ import { useState } from "react";
 
 type UsersType = {
   chatId: string ,
-  UserName: string
+  chatName: string
 };
 
 type CreateGroupProps = {
@@ -28,7 +28,7 @@ const CreateGroup = ({ users , handleCreateGroup }: CreateGroupProps) => {
   };
 
   const filteredUsers = users.filter((user) =>
-    user.UserName.toLowerCase().includes(searchName.toLowerCase())
+    user.chatName.toLowerCase().includes(searchName.toLowerCase())
   );
 
   return (
@@ -69,7 +69,7 @@ const CreateGroup = ({ users , handleCreateGroup }: CreateGroupProps) => {
               <span
                 key={m.chatId}
                 className="bg-purple-200 text-black p-2 w-max rounded-sm "
-              >{m.UserName}</span>
+              >{m.chatName}</span>
             ))}
           </div>
         </div>
@@ -86,7 +86,7 @@ const CreateGroup = ({ users , handleCreateGroup }: CreateGroupProps) => {
               key={user.chatId}
               className="flex justify-between items-center"
             >
-              <span>{user.UserName}</span>
+              <span>{user.chatName}</span>
 
               {added ? (
                 <button

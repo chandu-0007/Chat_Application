@@ -23,7 +23,7 @@ router.get("/getchats" , async(req : Request , res : Response ) =>{
               user2Id : true 
           }
         })
-        const ListOFchats = PrivacyChats.map((each) => ({
+        const ListOFchats = PrivacyChats.map((each :any) => ({
               chatId :each.id , 
               chatName : each.user1Id != req.user ? each.user1.username : each.user2.username 
         }))
@@ -117,7 +117,7 @@ router.get("/messages/:chatId", async (req: Request, res: Response) => {
             }
         });
 
-        const messages = message.map((each) => ({
+        const messages = message.map((each : any) => ({
             text: each.text,
             sentByUser: each.senderId === userId
         }));
@@ -135,9 +135,49 @@ router.get("/messages/:chatId", async (req: Request, res: Response) => {
 });
 
 
-router.post("create-room" , async ( req : Request  , res  : Response) =>{
+router.get("/groups", async (req: Request, res: Response) => {
+  try {
+    const cursor = req.query.cursor
+      ? req.query.cursor.toString()
+      : undefined;
+
+    const groups = await prisma.group.findMany({
+      take: 10,
+      skip: cursor ? 1 : 0,
+      ...(cursor && {
+    cursor: { id: cursor }
+  }),
+      orderBy: { id: "asc" },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        _count: {
+          select: {
+            members: true
+          }
+        }
+      }
+    });
+
+    return res.status(200).json({
+      status: true,
+      groups,
+      nextCursor: groups.length
+        ? groups[groups.length - 1]!.id
+        : null
+    });
+  } catch (err) {
+    return res.status(500).json({
+      status: false,
+      message: "Internal server error"
+    });
+  }
+});
+
+router.post("/create-group" , async ( req : Request  , res  : Response) =>{
     const userId = req.user; 
-    const groupName = req.body.groupName ;
+    const groupName = req.body.groupName;
     if(!groupName || !userId) {
         return res.json({
             status : false , 
@@ -184,7 +224,7 @@ router.post("create-room" , async ( req : Request  , res  : Response) =>{
 
 
 // join in the group 
-router.post("join-group/:groupId" , async(req : Request,res : Response) =>{
+router.post("/join-group/:groupId" , async(req : Request,res : Response) =>{
     const userId = req.user ; 
     const groupId = req.params.groupId
     if(!groupId){

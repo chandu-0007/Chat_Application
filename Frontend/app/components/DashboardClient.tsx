@@ -6,8 +6,9 @@ import UserCard from "./UserCard";
 import axios from "axios";
 import MessageCard from "./MessageCard";
 import CreateGroup from "./CreateGroup";
-import { tree } from "next/dist/build/templates/app-page";
 import Logout from "./Logout";
+import GetGroups from "./Funtions/GetGroups";
+import GroupCard from "./GroupCard";
 export default function DashboardClient({ token }: { token: string }) {
     const { socket, connectSocket, disconnectSocket } = useSocket();
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -18,8 +19,11 @@ export default function DashboardClient({ token }: { token: string }) {
     }>();
 
     // all groups 
-    const [Groups , SetGroups] = useState();
+    const [Groups, SetGroups] = useState<any[]>();
     const [GroupCreate, SetGroupCreate] = useState<boolean>(false);
+    let nextcursor: string;
+    const [togglegroupinfo, SetToggleGroupInfo] = useState<boolean>(false);
+
     const [Users, SetUsers] = useState<{
         username: string,
         profileUrl: string | null
@@ -47,6 +51,18 @@ export default function DashboardClient({ token }: { token: string }) {
         } catch (err) {
             alert("something got an error")
         }
+    }
+
+
+    // handle the groups call function 
+    const GetGroupInfo = async () => {
+        const info = await GetGroups(nextcursor);
+        nextcursor = info.nextCursor;
+        Settogglemsg(false);
+        console.log(info);
+        SetGroups(info.groups);
+        console.log(Groups);
+        SetToggleGroupInfo(true);
     }
 
     useEffect(() => {
@@ -85,6 +101,7 @@ export default function DashboardClient({ token }: { token: string }) {
     //fetch the messages 
     const getmessgaes = async (chatId: string, chatName: string) => {
         Settogglemsg(true);
+        SetToggleGroupInfo(false);
         if (!chatId || !chatName) {
             alert("something went worng ")
             return;
@@ -131,11 +148,11 @@ export default function DashboardClient({ token }: { token: string }) {
         }
         setinputmsg("");
     }
-    
-   const handleCreateGroup = (groupName : string ,members :any[])=>{
-      console.log(groupName);
-      console.log(members);
-   }
+
+    const handleCreateGroup = (groupName: string, members: any[]) => {
+        console.log(groupName);
+        console.log(members);
+    }
 
     const [open, setopen] = useState<boolean>(false)
     return (
@@ -189,17 +206,45 @@ export default function DashboardClient({ token }: { token: string }) {
                         {chats.length != 0 && <div className="text-white ">
                             <div className="text-white">
                                 {chats.map((child, index) => (
-                                    <div key={index}
-                                        className="flex items-center gap-2 pl-2 h-8 hover:bg-neutral-600 cursor-pointer"
+                                    <div
+                                        key={index}
                                         onClick={() => getmessgaes(child.chatId, child.chatName)}
+                                        className="flex items-center gap-3 px-3 py-2 
+             bg-neutral-900 hover:bg-violet-700/30
+             rounded-lg cursor-pointer transition-all duration-200"
                                     >
-                                        {/* <img src={child.profileUrl ?? "/default.png"} alt={child.username} className="w-8 h-8 rounded-full" /> */}
-                                        <span>{child.chatName}</span>
+                                        {/* Avatar */}
+                                        <div className="w-10 h-10 rounded-full bg-violet-600 flex items-center justify-center text-white font-semibold">
+                                            {child.profileUrl ? (
+                                                <img
+                                                    src={child.profileUrl}
+                                                    alt={child.chatName}
+                                                    className="w-10 h-10 rounded-full object-cover"
+                                                />
+                                            ) : (
+                                                child.chatName?.charAt(0).toUpperCase()
+                                            )}
+                                        </div>
+
+                                        {/* User Info */}
+                                        <div className="flex flex-col flex-1">
+                                            <span className="text-sm font-medium text-white truncate">
+                                                {child.chatName}
+                                            </span>
+
+                                            {/* Optional: Last message preview */}
+                                            {child.lastMessage && (
+                                                <span className="text-xs text-neutral-400 truncate">
+                                                    {child.lastMessage}
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
+
                                 ))}
                             </div>
                         </div>}
-                        <div className="text-white font-semibold  text-xl "> Groups </div>
+                        <div className="text-white font-semibold  text-xl cursor-pointer hover:bg-gray-500 " onClick={() => GetGroupInfo()}> Groups </div>
                         <div className="text-white font-semibold  text-xl "> List of Users </div>
                         <div className="text-white">
                             {Users.map((child) => (
@@ -263,29 +308,53 @@ export default function DashboardClient({ token }: { token: string }) {
                 )}
 
                 {
-                    !togglemsg && <div className="bg-black w-full h-full text-2xl text-white text-center items-center"> No chats yet</div>
+                    !togglemsg && !togglegroupinfo && <div className="bg-black w-full h-full text-2xl text-white text-center items-center"> No chats yet</div>
+                }
+
+                {togglegroupinfo && <>
+                    <div className="bg-black w-full min-h-screen p-6 mb-0
+                grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3
+                gap-x-8 gap-y-1">
+
+                        {Groups != null &&
+                            Groups.map((each: any) => (
+                                <GroupCard
+                                    key={each.id}
+                                    group={{
+                                        id: each.id,
+                                        name: each.name,
+                                        description: each.description,
+                                        noOfMembers: each._count.members,
+                                    }}
+                                />
+                            ))}
+                    </div>
+
+
+                </>
+
                 }
             </div>
-                {GroupCreate && (
-                    <div className="absolute inset-0 bg-black/60   text-balck flex justify-center items-center z-50">
-                        <div className="bg-white w-100 rounded-2xl p-2">
-                             <div 
-                               className="flex justify-between items-baseline px-2 ">
-                                <label 
+            {GroupCreate && (
+                <div className="absolute inset-0 bg-black/60   text-balck flex justify-center items-center z-50">
+                    <div className="bg-white w-100 rounded-2xl p-2">
+                        <div
+                            className="flex justify-between items-baseline px-2 ">
+                            <label
                                 className="text-lg font-semibold font-sans ">
-                                Create New Group 
-                              </label>
-                              <button
+                                Create New Group
+                            </label>
+                            <button
                                 className="bg-red-500 rounded-lg p-2 text-white text-md  text-center "
-                                onClick={()=>SetGroupCreate(!GroupCreate)}
-                                >
-                                 cancel
-                              </button>
-                            </div>
-                             <CreateGroup users={chats} handleCreateGroup={handleCreateGroup} />
+                                onClick={() => SetGroupCreate(!GroupCreate)}
+                            >
+                                cancel
+                            </button>
                         </div>
+                        <CreateGroup users={chats} handleCreateGroup={handleCreateGroup} />
                     </div>
-                )}
+                </div>
+            )}
         </div>
     );
 }

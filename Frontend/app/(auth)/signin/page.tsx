@@ -8,6 +8,7 @@ export default function login() {
     email: "",
     password: ""
   })
+  const [ message , SetMessage ] = useState<string>("")
 
   const OnChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     SetsignIn({
@@ -64,9 +65,14 @@ return (
       <div className="w-1/2 h-full flex items-center justify-center bg-neutral-900">
         <div className="w-full px-10 text-white">
 
-          <h2 className="text-2xl font-semibold mb-6">
+          <div className="flex items-center gap-2.5  ">
+            <img src="./Logo.png" alt=""   
+            onClick={()=> redirect("/")}
+             className="w-16  h-16 mb-3 animate-pulse cursor-pointer"/>
+            <h2 className="text-2xl font-semibold mb-6">
             Login to Chat.com
           </h2>
+          </div>
 
           <label className="text-sm">Email address</label>
           <input
@@ -106,7 +112,6 @@ return (
               Register
             </button>
           </p>
-
         </div>
       </div>
     </div>

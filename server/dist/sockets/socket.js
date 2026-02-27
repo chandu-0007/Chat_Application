@@ -32,6 +32,7 @@ export default function socketlogic(server) {
     });
     io.on("connection", (socket) => {
         onlineUser.set(socket.data.userId, socket);
+        console.log(socket);
         socket.on("message", async (playload) => {
             console.log(playload);
             try {

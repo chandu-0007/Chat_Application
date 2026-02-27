@@ -81,11 +81,14 @@ export default function SingUP() {
         {/* 🧾 RIGHT SIGNUP FORM */}
         <div className="w-1/2 h-full flex items-center justify-center bg-neutral-900">
           <div className="w-full px-10 text-white">
-
+               <div className="flex items-center gap-2.5  ">
+            <img src="./Logo.png" alt=""   
+              onClick={()=> redirect("/")}
+             className="w-16  h-16 mb-3 cursor-pointer animate-pulse"/>
             <h2 className="text-2xl font-semibold mb-6">
-              Register to our Chat.com
-            </h2>
-
+             Register to our Chat.com
+          </h2>
+          </div>
             <label className="text-sm">Username</label>
             <input
               type="text"

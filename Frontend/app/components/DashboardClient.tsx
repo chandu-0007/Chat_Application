@@ -158,7 +158,7 @@ export default function DashboardClient({ token }: { token: string }) {
     return (
         <div className="w-screen relative h-screen bg-black ">
             <div className="w-full h-full bg-neutral-900 rounded-lg px-1.5 flex">
-                <div className="bg-neutral-900 w-80 h-full relative">
+                <div className="bg-neutral-900 w-80 h-full relative overflow-y-auto">
                     <div className="flex justify-between items-center border-2 border-b-white p-2 " >
                         <UserCard token={token}></UserCard>
                         <div className="flex gap-2.5">

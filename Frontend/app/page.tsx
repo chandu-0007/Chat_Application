@@ -132,7 +132,7 @@ export default async function Home() {
       */}
      
       <section className=" h-100 bg-gradient-to-b from-transparent via-slate-900 to-black text-white py-20">
-         
+         ;kldfj;gklsdfhlkjghasd;kj
       </section>
     </>
   );

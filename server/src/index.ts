@@ -11,7 +11,7 @@ import  ChatRouter from "./routers/chats.js"
  const app = Express()
  app.use(Express.json())
 app.use(cors({
-    origin: "http://localhost:3000",
+    origin: "https://chat-application-ps2v.onrender.com",
     credentials: true
 }));
 app.use(cookieParser())

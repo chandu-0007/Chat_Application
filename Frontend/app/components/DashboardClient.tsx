@@ -37,7 +37,7 @@ export default function DashboardClient({ token }: { token: string }) {
 
     const createchat = async (username: string) => {
         try {
-            const createchatres = await axios.post("http://localhost:3003/chat/chat-privacy", {
+            const createchatres = await axios.post("https://chat-application-ps2v.onrender.com/chat/chat-privacy", {
                 username: username
             }, {
                 withCredentials: true
@@ -155,207 +155,193 @@ export default function DashboardClient({ token }: { token: string }) {
     }
 
     const [open, setopen] = useState<boolean>(false)
-    return (
-        <div className="w-screen relative h-screen bg-black ">
-            <div className="w-full h-full bg-neutral-900 rounded-lg px-1.5 flex">
-                <div className="bg-neutral-900 w-80 h-full relative overflow-y-auto">
-                    <div className="flex justify-between items-center border-2 border-b-white p-2 " >
-                        <UserCard token={token}></UserCard>
-                        <div className="flex gap-2.5">
-                            <div>
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6 text-white">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
-                                </svg>
-                            </div>
-                            <div
-                                onClick={() => setopen(!open)}>
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6 text-white">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
-                                </svg>
-                            </div>
-                            {open && (
-                                <div className="absolute right-0 top-10 mt-2 w-40 bg-neutral-800 rounded-lg shadow-lg border border-neutral-700 z-50">
-                                    <button className="w-full text-left px-4 py-2 text-sm text-white hover:bg-neutral-700">
-                                        Update Profile
-                                    </button>
+return (
+  <div className="w-screen h-screen bg-[#0f0f0f]  text-white flex">
+    
+    {/* SIDEBAR */}
+    <div className="w-80 bg-[#111] border-r border-neutral-800 flex flex-col">
 
-                                    <Logout />
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* search bar  */}
-                    <div className=" flex gap-1.5 items-center-safe ">
-                        <input className="bg-neutral-650 text-white p-1.5 items-center rounded-xl w-full h-8 border-none   mt-4" placeholder="search"></input>
-                        <button
-                            className="bg-purple-600 items-center hover:bg-purple-500 mt-4 
-                            rounded-full p-0.5 text-white text-center"
-                            onClick={() => SetGroupCreate((prevs) => !prevs)}
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6 text-white">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                            </svg>
-
-                        </button>
-                    </div>
-                    {/* chats */}
-
-                    <div>
-                        {chats.length == 0 && <div className="text-gray-400 flex  justify-center items-center ">..No chats.. </div>}
-                        {chats.length != 0 && <div className="text-white ">
-                            <div className="text-white">
-                                {chats.map((child, index) => (
-                                    <div
-                                        key={index}
-                                        onClick={() => getmessgaes(child.chatId, child.chatName)}
-                                        className="flex items-center gap-3 px-3 py-2 
-             bg-neutral-900 hover:bg-violet-700/30
-             rounded-lg cursor-pointer transition-all duration-200"
-                                    >
-                                        {/* Avatar */}
-                                        <div className="w-10 h-10 rounded-full bg-violet-600 flex items-center justify-center text-white font-semibold">
-                                            {child.profileUrl ? (
-                                                <img
-                                                    src={child.profileUrl}
-                                                    alt={child.chatName}
-                                                    className="w-10 h-10 rounded-full object-cover"
-                                                />
-                                            ) : (
-                                                child.chatName?.charAt(0).toUpperCase()
-                                            )}
-                                        </div>
-
-                                        {/* User Info */}
-                                        <div className="flex flex-col flex-1">
-                                            <span className="text-sm font-medium text-white truncate">
-                                                {child.chatName}
-                                            </span>
-
-                                            {/* Optional: Last message preview */}
-                                            {child.lastMessage && (
-                                                <span className="text-xs text-neutral-400 truncate">
-                                                    {child.lastMessage}
-                                                </span>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                ))}
-                            </div>
-                        </div>}
-                        <div className="text-white font-semibold  text-xl cursor-pointer hover:bg-gray-500 " onClick={() => GetGroupInfo()}> Groups </div>
-                        <div className="text-white font-semibold  text-xl "> List of Users </div>
-                        <div className="text-white">
-                            {Users.map((child) => (
-                                <div key={child.username}
-                                    className="flex items-center gap-2 pl-2 h-8 hover:bg-neutral-600 cursor-pointer"
-                                    onClick={() => createchat(child.username)}
-                                >
-                                    {/* <img src={child.profileUrl ?? "/default.png"} alt={child.username} className="w-8 h-8 rounded-full" /> */}
-                                    <span>{child.username}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-
-                {/* messages slide  */}
-                {togglemsg && (
-                    <div className="bg-black w-full h-full flex flex-col">
-
-                        <div className="flex items-center gap-3 p-4 border-b border-neutral-800 bg-neutral-900">
-                            <img
-                                src="https://via.placeholder.com/40"
-                                alt="profile"
-                                className="w-8 h-8 rounded-full object-cover"
-                            />
-                            <div>
-                                <h2 className="text-white font-semibold">{currentUser?.chatName}</h2>
-                            </div>
-                        </div>
-
-                        {/* Messages Area */}
-                        <div className="flex-1 overflow-y-auto p-4 space-y-3">
-                            {Messages.map((each, index) => (
-                                <MessageCard
-                                    key={index}
-                                    text={each.text}
-                                    sentByUser={each.sentByUser}
-                                />
-                            ))}
-                            <div ref={messagesEndRef} />
-                        </div>
-
-                        {/* Input Area */}
-                        <div className="flex items-center gap-2 p-3 bg-neutral-900">
-                            <input
-                                type="text"
-                                name="inputmsg"
-                                value={inputmsg}
-                                onChange={(e) => setinputmsg(e.target.value)}
-                                placeholder="Type a message..."
-                                className="flex-1 h-9 px-3 rounded-md bg-neutral-800 text-white outline-none"
-                            />
-                            <button
-                                onClick={() => SendMsg()}
-                                className="h-9 px-4 rounded-md bg-white text-black font-medium">
-                                Send
-                            </button>
-                        </div>
-
-                    </div>
-                )}
-
-                {
-                    !togglemsg && !togglegroupinfo && <div className="bg-black w-full h-full text-2xl text-white text-center items-center"> No chats yet</div>
-                }
-
-                {togglegroupinfo && <>
-                    <div className="bg-black w-full min-h-screen p-6 mb-0
-                grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3
-                gap-x-8 gap-y-1">
-
-                        {Groups != null &&
-                            Groups.map((each: any) => (
-                                <GroupCard
-                                    key={each.id}
-                                    group={{
-                                        id: each.id,
-                                        name: each.name,
-                                        description: each.description,
-                                        noOfMembers: each._count.members,
-                                    }}
-                                />
-                            ))}
-                    </div>
-
-
-                </>
-
-                }
+      {/* HEADER */}
+      <div className="flex justify-between items-center px-4 py-3 border-b border-neutral-800">
+        <UserCard token={token} />
+        <div className="flex items-center gap-3 relative">
+          
+          {/* menu button */}
+          <button onClick={() => setopen(!open)}>
+            <div className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-neutral-700 transition">
+              ⋮
             </div>
-            {GroupCreate && (
-                <div className="absolute inset-0 bg-black/60   text-balck flex justify-center items-center z-50">
-                    <div className="bg-white w-100 rounded-2xl p-2">
-                        <div
-                            className="flex justify-between items-baseline px-2 ">
-                            <label
-                                className="text-lg font-semibold font-sans ">
-                                Create New Group
-                            </label>
-                            <button
-                                className="bg-red-500 rounded-lg p-2 text-white text-md  text-center "
-                                onClick={() => SetGroupCreate(!GroupCreate)}
-                            >
-                                cancel
-                            </button>
-                        </div>
-                        <CreateGroup users={chats} handleCreateGroup={handleCreateGroup} />
-                    </div>
-                </div>
-            )}
+          </button>
+
+          {open && (
+            <div className="absolute right-0 top-10 w-44 bg-neutral-900 border border-neutral-700 rounded-xl shadow-xl">
+              <button className="w-full text-left px-4 py-2 text-sm hover:bg-neutral-800">
+                Update Profile
+              </button>
+              <Logout />
+            </div>
+          )}
         </div>
-    );
+      </div>
+
+      {/* SEARCH */}
+      <div className="p-3 flex gap-2">
+        <input
+          placeholder="Search..."
+          className="flex-1 px-3 py-2 rounded-lg bg-neutral-800 text-sm outline-none focus:ring-2 focus:ring-violet-500"
+        />
+        <button
+          onClick={() => SetGroupCreate((p) => !p)}
+          className="bg-violet-600 hover:bg-violet-500 transition px-3 rounded-lg"
+        >
+          +
+        </button>
+      </div>
+
+      {/* CHAT LIST */}
+      <div className="flex-1 overflow-y-auto px-2 space-y-1">
+        {chats.length === 0 && (
+          <div className="text-center text-neutral-500 mt-10">
+            No chats yet
+          </div>
+        )}
+
+        {chats.map((child, index) => (
+          <div
+            key={index}
+            onClick={() => getmessgaes(child.chatId, child.chatName)}
+            className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-neutral-800 cursor-pointer transition"
+          >
+            <div className="w-10 h-10 rounded-full bg-violet-600 flex items-center justify-center font-semibold">
+              {child.chatName?.charAt(0).toUpperCase()}
+            </div>
+
+            <div className="flex flex-col">
+              <span className="text-sm font-medium">
+                {child.chatName}
+              </span>
+              {child.lastMessage && (
+                <span className="text-xs text-neutral-400 truncate w-40">
+                  {child.lastMessage}
+                </span>
+              )}
+            </div>
+          </div>
+        ))}
+
+        {/* GROUPS */}
+        <div
+          onClick={GetGroupInfo}
+          className="mt-4 px-3 py-2 rounded-lg hover:bg-neutral-800 cursor-pointer font-semibold"
+        >
+          Groups
+        </div>
+
+        {/* USERS */}
+        <div className="px-3 text-lg font-serif  mt-2">
+          Find your Users
+        </div>
+
+        {Users.map((child) => (
+          <div
+            key={child.username}
+            onClick={() => createchat(child.username)}
+            className="px-3 py-2 rounded-lg hover:bg-neutral-800 cursor-pointer text-sm"
+          >
+            {child.username}
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* MAIN CONTENT */}
+    <div className="flex-1 flex flex-col bg-[#0b0b0b]">
+
+      {/* EMPTY STATE */}
+      {!togglemsg && !togglegroupinfo && (
+        <div className="flex items-center justify-center h-full text-neutral-500 text-lg">
+          Select a chat to start messaging
+        </div>
+      )}
+
+      {/* CHAT VIEW */}
+      {togglemsg && (
+        <>
+          {/* HEADER */}
+          <div className="px-4 py-3 border-b border-neutral-800 flex items-center gap-3 bg-[#111]">
+            <div className="w-9 h-9 rounded-full bg-violet-600 flex items-center justify-center">
+              {currentUser?.chatName?.charAt(0)}
+            </div>
+            <h2 className="font-semibold">{currentUser?.chatName}</h2>
+          </div>
+
+          {/* MESSAGES */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-3">
+            {Messages.map((each, index) => (
+              <MessageCard
+                key={index}
+                text={each.text}
+                sentByUser={each.sentByUser}
+              />
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* INPUT */}
+          <div className="p-3 border-t border-neutral-800 flex gap-2 bg-[#111]">
+            <input
+              value={inputmsg}
+              onChange={(e) => setinputmsg(e.target.value)}
+              placeholder="Type a message..."
+              className="flex-1 px-3 py-2 rounded-lg bg-neutral-800 outline-none focus:ring-2 focus:ring-violet-500"
+            />
+            <button
+              onClick={SendMsg}
+              className="px-4 rounded-lg bg-violet-600 hover:bg-violet-500 transition"
+            >
+              Send
+            </button>
+          </div>
+        </>
+      )}
+
+      {/* GROUP VIEW */}
+      {togglegroupinfo && (
+        <div className="p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {Groups?.map((each: any) => (
+            <GroupCard
+              key={each.id}
+              group={{
+                id: each.id,
+                name: each.name,
+                description: each.description,
+                noOfMembers: each._count.members,
+              }}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+
+    {/* MODAL */}
+    {GroupCreate && (
+      <div className="absolute inset-0 bg-black/70 flex justify-center items-center">
+        <div className="bg-neutral-900 p-6 rounded-2xl w-[420px] shadow-2xl">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-semibold">Create Group</h2>
+            <button
+              onClick={() => SetGroupCreate(false)}
+              className="text-red-400 hover:text-red-300"
+            >
+              ✕
+            </button>
+          </div>
+
+          <CreateGroup users={chats} handleCreateGroup={handleCreateGroup} />
+        </div>
+      </div>
+    )}
+  </div>
+);
 }
 

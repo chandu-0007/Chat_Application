@@ -31,7 +31,7 @@ export default function SingUP() {
            return ; 
       }
       const res = await axios.post(
-        "http://localhost:3003/user/register",
+        "https://chat-application-ps2v.onrender.com/user/register",
         {
           username: SignUP.username,
           email: SignUP.email,

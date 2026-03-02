@@ -5,13 +5,13 @@ const Logout = () => {
   const logoutfunction = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3003/user/logout",
+        "https://chat-application-ps2v.onrender.com/user/logout",
         { withCredentials: true }
       );
 
       if (response.data.status) {
         alert("Logout successful");
-        redirect("/signin")
+        redirect("/dashboard")
       }
     } catch (error) {
       console.error("Logout error:", error);

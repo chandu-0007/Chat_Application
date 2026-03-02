@@ -3,6 +3,7 @@ import GetToken from "./lib/getToken";
 import Link from "next/link";
 import Features from "./components/Features";
 import HowItWorks from "./components/HowItWork";
+import Footer from "./components/Footer";
 export default async function Home() {
   const token = await GetToken();
 
@@ -132,7 +133,7 @@ export default async function Home() {
       */}
      
       <section className=" h-100 bg-gradient-to-b from-transparent via-slate-900 to-black text-white py-20">
-         ;kldfj;gklsdfhlkjghasd;kj
+        <Footer/>
       </section>
     </>
   );

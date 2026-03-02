@@ -22,7 +22,7 @@ export default function login() {
       SetError("please fill the above flieds");
       return ; 
     }
-    const res = await axios.post("http://localhost:3003/user/login", SignIn ,{
+    const res = await axios.post("https://chat-application-ps2v.onrender.com/user/login", SignIn ,{
       withCredentials: true
     })
     console.log(res);

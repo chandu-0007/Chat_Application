@@ -2,7 +2,7 @@ import axios from "axios";
 
 export default async function GetGroups(cursor?: string) {
   const API =
-    "https://chat-application-ps2v.onrender.com/chat/groups";
+    "http://localhost:3003/chat/groups";
   try {
    
     const response = await axios.get(API, {

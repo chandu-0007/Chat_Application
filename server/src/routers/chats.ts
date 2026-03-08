@@ -225,7 +225,7 @@ router.post("/create-group" , async ( req : Request  , res  : Response) =>{
 
 // join in the group 
 router.post("/join-group/:groupId" , async(req : Request,res : Response) =>{
-    const userId = req.user ; 
+    const userId = req.user; 
     const groupId = req.params.groupId
     if(!groupId){
         return res.json({
@@ -264,4 +264,5 @@ router.post("/join-group/:groupId" , async(req : Request,res : Response) =>{
       })
     }
 })
+
 export default router ; 

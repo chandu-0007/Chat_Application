@@ -9,17 +9,30 @@ import CreateGroup from "./CreateGroup";
 import Logout from "./Logout";
 import GetGroups from "./Funtions/GetGroups";
 import GroupCard from "./GroupCard";
+type chatType = {
+  chatId: string;
+  chatName: string;
+  lastMessage?: string;
+};
+
+type groupType = {
+  id: string;
+  name: string;
+  description: string;
+  _count: { members: number };
+};
+
 export default function DashboardClient({ token }: { token: string }) {
   const { socket, connectSocket, disconnectSocket } = useSocket();
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
-  const [chats, Setchats] = useState<any[]>([]);
+  const [chats, Setchats] = useState<chatType[]>([]);
   const [currentUser, SetCurrentUser] = useState<{
     chatId: string,
     chatName: string
   }>();
 
   // all groups 
-  const [Groups, SetGroups] = useState<any[]>();
+  const [Groups, SetGroups] = useState<groupType[]>();
   const [GroupCreate, SetGroupCreate] = useState<boolean>(false);
   let nextcursor: string;
   const [togglegroupinfo, SetToggleGroupInfo] = useState<boolean>(false);
@@ -48,7 +61,7 @@ export default function DashboardClient({ token }: { token: string }) {
           chatName: username
         }])
       }
-    } catch (err) {
+    } catch {
       alert("something got an error")
     }
   }
@@ -95,6 +108,7 @@ export default function DashboardClient({ token }: { token: string }) {
     return () => {
       disconnectSocket();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
 
@@ -118,7 +132,7 @@ export default function DashboardClient({ token }: { token: string }) {
       if (response.data.status) {
         SetMessages(response.data.messages);
       }
-    } catch (err) {
+    } catch {
       alert("something went worng");
     }
   }
@@ -149,7 +163,7 @@ export default function DashboardClient({ token }: { token: string }) {
     setinputmsg("");
   }
 
-  const handleCreateGroup = (groupName: string, members: any[]) => {
+  const handleCreateGroup = (groupName: string, members: chatType[]) => {
     console.log(groupName);
     console.log(members);
   }
@@ -317,7 +331,7 @@ export default function DashboardClient({ token }: { token: string }) {
         {/* GROUP VIEW */}
         {togglegroupinfo && (
           <div className="p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {Groups?.map((each: any) => (
+            {Groups?.map((each: groupType) => (
               <GroupCard
                 key={each.id}
                 group={{

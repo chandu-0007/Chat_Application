@@ -2,6 +2,7 @@
 import { redirect, useRouter } from "next/navigation";
 import React, { useState } from "react";
 import axios from "axios";
+import Image from "next/image";
 
 type userInfo = {
   username: string;
@@ -82,7 +83,7 @@ export default function SingUP() {
         <div className="w-1/2 h-full flex items-center justify-center bg-neutral-900">
           <div className="w-full px-10 text-white">
                <div className="flex items-center gap-2.5  ">
-            <img src="./Logo.png" alt=""   
+            <Image src="/Logo.png" alt="Logo" width={64} height={64}  
               onClick={()=> redirect("/")}
              className="w-16  h-16 mb-3 cursor-pointer animate-pulse"/>
             <h2 className="text-2xl font-semibold mb-6">

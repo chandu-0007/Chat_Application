@@ -20,6 +20,7 @@ export default function  UserCard({token}:{ token: string | null} ){
         }
        }
        fetch();
+       // eslint-disable-next-line react-hooks/exhaustive-deps
     }  , [token])
     return <div>
           <div className="flex pl-2 items-cemter">

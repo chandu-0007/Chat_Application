@@ -4,6 +4,7 @@ import { Server as HttpServer } from "http";
 import cookie from "cookie";
 import jwt from "jsonwebtoken"
 import { PrismaClient } from "@prisma/client";
+import type { Socket } from "dgram";
 const prisma = new PrismaClient()
 //online users 
 const onlineUser = new Map<string, IOSocket>()
@@ -63,7 +64,7 @@ export default function socketlogic(server: HttpServer) {
                 chatName : playload.chatName
                })
             }
-          
+        
         }catch(err){
           socket.emit("message" , {
              status : false , 
@@ -71,7 +72,61 @@ export default function socketlogic(server: HttpServer) {
           })
         }
         })
-         
+         // request handler 
+
+         socket.on("request-sent" , async(playload)=>{
+           const {groupId} = playload ; 
+           if(!groupId) return ; 
+           try{
+            const user = await prisma.user.findUnique({
+                where :{
+                    id: socket.data.userId
+                } , 
+                select:{
+                    username : true  , 
+                    profileUrl : true , 
+                    email : true 
+                }
+            })
+            const admin =await prisma.group.findUnique({
+                where:{
+                    id : groupId 
+                } , 
+                select:{
+                    adminId : true , 
+                    name: true 
+                }
+            })
+            
+            if(admin){
+                const Notification = await prisma.notifacation.create({
+                data:{
+                    text : `${user?.username} is sent request to join in your ${admin?.name}` , 
+                    view  : false , 
+                    touserId : admin?.adminId , 
+                    senderId  : socket.data.userId
+                }
+            })
+            const adminSocket = onlineUser.get(admin?.adminId);
+            if(adminSocket){
+                adminSocket.emit("Notification" , {
+                    NotificationId : Notification.id , 
+                    SenderId : socket.data.userId , 
+                    SenderName : user?.username , 
+                    SenderProfileurl : user?.profileUrl , 
+                    Senderemail : user?.email , 
+                    text : Notification.text  ,
+                })
+            }
+            }
+
+           }catch(err){
+            socket.emit("message" , {
+                status : false , 
+                message : "internal server error"
+            })
+           }
+         })
         socket.on("group-chat" , async(playload)=>{
            const {text  , groupId } = playload 
            if(!groupId) return 

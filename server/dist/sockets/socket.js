@@ -72,6 +72,7 @@ export default function socketlogic(server) {
         // request handler 
         socket.on("request-sent", async (playload) => {
             const { groupId } = playload;
+            console.log("request recived ");
             if (!groupId)
                 return;
             try {
@@ -99,6 +100,8 @@ export default function socketlogic(server) {
                         data: {
                             text: `${user?.username} is sent request to join in your ${admin?.name}`,
                             view: false,
+                            type: "join-request",
+                            groupId: groupId,
                             touserId: admin?.adminId,
                             senderId: socket.data.userId
                         }

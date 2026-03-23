@@ -92,6 +92,8 @@ model Notifacation {
   id       String   @id @default(uuid())
   text     String   
   view     Boolean 
+  type     String 
+  groupId  String?
   senderId String 
   touserId String 
 

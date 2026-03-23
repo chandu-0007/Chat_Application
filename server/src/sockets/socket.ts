@@ -76,6 +76,7 @@ export default function socketlogic(server: HttpServer) {
 
          socket.on("request-sent" , async(playload)=>{
            const {groupId} = playload ; 
+           console.log("request recived ")
            if(!groupId) return ; 
            try{
             const user = await prisma.user.findUnique({
@@ -103,6 +104,8 @@ export default function socketlogic(server: HttpServer) {
                 data:{
                     text : `${user?.username} is sent request to join in your ${admin?.name}` , 
                     view  : false , 
+                    type : "join-request" , 
+                    groupId : groupId,
                     touserId : admin?.adminId , 
                     senderId  : socket.data.userId
                 }

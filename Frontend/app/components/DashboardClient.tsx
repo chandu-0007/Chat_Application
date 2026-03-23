@@ -9,6 +9,8 @@ import CreateGroup from "./CreateGroup";
 import Logout from "./Logout";
 import GetGroups from "./Funtions/GetGroups";
 import GroupCard from "./GroupCard";
+import NotificationCard from "./NotificationCard";
+import { group } from "console";
 type chatType = {
   chatId: string;
   chatName: string;
@@ -21,6 +23,14 @@ type groupType = {
   description: string;
   _count: { members: number };
 };
+ export type NotificationType = {
+   id : string , 
+   text : string , 
+   view  : boolean , 
+   sender : string   , 
+   type : string , 
+   groupId : string | null 
+  }
 
 export default function DashboardClient({ token }: { token: string }) {
   const { socket, connectSocket, disconnectSocket } = useSocket();
@@ -65,6 +75,35 @@ export default function DashboardClient({ token }: { token: string }) {
       alert("something got an error")
     }
   }
+ 
+  // notificatons state componet
+  const [Requets , SetRequets] = useState<NotificationType[]>([]); 
+  //acceps function 
+  const  AcceptRequest  =  async (groupId : string  , memberId : string )=>{
+     try{
+         const res = await axios.post("http:localhost:3003/chat/join-group",{
+          groupId  , 
+          memberId
+         } ,  {
+          withCredentials : true , 
+         })
+
+         alert("successfully joined the group")
+         SetRequets((prevs) =>{
+            for(let i=0 ;i< prevs.length ; i++){
+              if(prevs[i].groupId == groupId && prevs[i].sender == memberId){
+                prevs[i].view = true ; 
+                return prevs;
+              }  
+            } 
+          return prevs; 
+
+         })
+     }catch(err){
+      console.log(err);
+           alert("something went wrong")
+     }
+  }
 
 
   // handle the groups call function 
@@ -94,17 +133,27 @@ export default function DashboardClient({ token }: { token: string }) {
         withCredentials: true
       })
       if (res.status == 200) {
-        SetUsers(users.data.allusers)
-        console.log(Users)
+        SetUsers(users.data.allusers);
       }
       if (res.data?.status) {
         // assume res.data.ListOFchats is an array of chats; append them
-        console.log(res.data)
         Setchats((prevs) => [...prevs, ...res.data.ListOFchats]);
       }
     };
     // fetch chats when token changes
+
+    //geting the notifications of the uers 
+    const getNotifications = async() =>{
+       const  res = await axios.get("http://localhost:3003/chat/notifications" , {
+        withCredentials : true 
+       })
+       console.log(res.data.notifications);
+       if(res.data.status){
+        SetRequets((prevs) => [...prevs ,...res.data.notifications])
+       }
+    }
     getchats();
+    getNotifications(); 
     return () => {
       disconnectSocket();
     };
@@ -139,14 +188,12 @@ export default function DashboardClient({ token }: { token: string }) {
 
   useEffect(() => {
     socket?.on("message", (data) => {
-      console.log(data);
       SetMessages((prevs) => [...prevs, { text: data.text, sentByUser: false }])
     })
 
   }, [socket])
 
   const SendMsg = () => {
-    console.log(currentUser?.chatId);
     const sendPlayLoad = {
       text: inputmsg,
       chatId: currentUser?.chatId,
@@ -366,56 +413,55 @@ export default function DashboardClient({ token }: { token: string }) {
       )}
 
       {/* Notification Tab */}
-{Notification && (
+      {Notification && (
   <div className="fixed inset-0 flex justify-center items-center bg-black/60 backdrop-blur-sm z-50">
 
-    <div className="bg-[#0f0f13] w-[420px] max-h-[500px] rounded-2xl shadow-2xl border border-violet-800 flex flex-col">
+    {/* Modal */}
+    <div className="w-full max-w-lg h-[520px] bg-[#0f0f13] rounded-2xl shadow-2xl border border-gray-800 flex flex-col overflow-hidden">
 
       {/* Header */}
-      <div className="flex justify-between items-center px-5 py-4 border-b border-violet-900">
+      <div className="flex justify-between items-center px-5 py-4 border-b border-gray-800">
         <h2 className="text-lg font-semibold text-white">
           Notifications
         </h2>
 
         <div className="flex gap-4 items-center">
-          <button className="text-sm text-violet-400 hover:text-violet-300">
+          <button className="text-sm text-violet-400 hover:text-violet-300 transition">
             Mark all read
           </button>
 
           <button
             onClick={() => SetNotification(false)}
-            className="text-gray-400 hover:text-white text-xl"
+            className="text-gray-400 hover:text-white text-xl transition"
           >
             ✕
           </button>
         </div>
       </div>
 
-      {/* Notification List */}
-      <div className="overflow-y-auto">
+      {/* Content */}
+      <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
 
-        {/* Notification Item */}
-        <div className="flex gap-3 px-5 py-4 border-b border-violet-900 hover:bg-[#1a1a24] transition cursor-pointer">
+        {Requets.length > 0 ? (
+          Requets.map((each) => (
+            <NotificationCard
+              key={each.id}
+              data={each}
+              onAccept={AcceptRequest}
+              onCancel={(id) => console.log("Cancel", id)}
+            />
+          ))
+        ) : (
+          <div className="h-full flex flex-col items-center justify-center text-gray-500 text-sm">
+            <p>No notifications</p>
+          </div>
+        )}
 
-         
-         
-
-        </div>
-
-      </div>
-
-      {/* Footer */}
-      <div className="p-4 text-center border-t border-violet-900">
-        <button className="text-violet-400 text-sm hover:text-violet-300">
-          View all notifications
-        </button>
       </div>
 
     </div>
-
   </div>
 )}
     </div>
   );
 }
-

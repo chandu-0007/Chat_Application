@@ -224,9 +224,10 @@ router.post("/create-group" , async ( req : Request  , res  : Response) =>{
 
 
 // join in the group 
-router.post("/join-group/:groupId" , async(req : Request,res : Response) =>{
+router.post("/join-group/" , async(req : Request,res : Response) =>{
     const userId = req.user; 
-    const groupId = req.params.groupId
+    const groupId = req.body.groupId
+    const memberId  = req.body.memberId ; 
     if(!groupId){
         return res.json({
             status : false ,
@@ -248,7 +249,7 @@ router.post("/join-group/:groupId" , async(req : Request,res : Response) =>{
 
        await prisma.groupMember.create({
         data :{
-           userId:userId!, 
+           userId:memberId!, 
            groupId: groupId
         }
        })
@@ -262,6 +263,28 @@ router.post("/join-group/:groupId" , async(req : Request,res : Response) =>{
         status : false  ,
         message : "Internal server error"
       })
+    }
+})
+
+
+//routre to get the notification of the users 
+router.get("/notifications/" ,async  (req : Request , res : Response) =>{
+    const userId = req.user ; 
+    try{
+       const notifications = await prisma.notifacation.findMany({
+        where :{
+            touserId :userId! 
+        }
+       })
+       return res.status(200).json({
+        status : true , 
+        notifications
+       })
+    }catch(error ){
+        return res.status(500).json({
+            status : false , 
+            message : "Internal server error" , 
+        })
     }
 })
 

@@ -2,13 +2,14 @@
 
 import { useState } from "react"
 import axios from "axios"
-import { redirect } from "next/navigation"
+import { useRouter } from "next/navigation";
 import Image from "next/image"
 export default function Login() {
   const [SignIn, SetsignIn] = useState({
     email: "",
     password: ""
   })
+  const router = useRouter(); 
 
   const OnChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     SetsignIn({
@@ -29,13 +30,13 @@ export default function Login() {
       const data = res.data;
       if (data.status) {
         alert("login successful");
-        redirect("/dashboard");
+        router.push("/dashboard");
       } else {
         SetError(data.message || "Invalid credentials");
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.log(error);
-      if (error.response && error.response.data) {
+      if (axios.isAxiosError(error) && error.response && error.response.data) {
         SetError(error.response.data.message || "Invalid credentials");
       } else {
         SetError("An error occurred during login");
@@ -74,7 +75,7 @@ export default function Login() {
 
             <div className="flex items-center gap-2.5  ">
               <Image src="/Logo.png" alt="Logo" width={64} height={64}
-                onClick={() => redirect("/")}
+                onClick={() => router.push("/")}
                 className="w-16  h-16 mb-3 animate-pulse cursor-pointer" />
               <h2 className="text-2xl font-semibold mb-6">
                 Login to Chat.com
@@ -114,7 +115,7 @@ export default function Login() {
               Don&apos;t have an account?{" "}
               <button
                 className="text-white hover:underline cursor-pointer"
-                onClick={() => redirect("/signup")}
+                onClick={() => router.push("/signup")}
               >
                 Register
               </button>

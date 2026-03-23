@@ -50,7 +50,7 @@ export default function FeatureScroll() {
             className="w-80 h-60 rounded-md  bg-white shadow-lg  text-lg  flex-col justify-start"
           >
             <div className="flex items-center justify-center p-4">
-              <Image src={item.icon} alt={item.title} width={80} height={80} className="rounded-full items-center" />
+             
             </div>
             <div className="p-2.5 text-center ">
               <h2 className="font-bold uppercase  tracking-tight ">{item.title}</h2>

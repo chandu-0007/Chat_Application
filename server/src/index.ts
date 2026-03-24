@@ -10,8 +10,14 @@ import ChatRouter from "./routers/chats.js"
 dotenv.config()
 const app = Express()
 app.use(Express.json())
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  "https://chat-application-taupe-omega.vercel.app",
+  "http://localhost:3000",
+].filter(Boolean) as string[];
+
 app.use(cors({
-  origin: "https://chat-application-taupe-omega.vercel.app",
+  origin: allowedOrigins,
   credentials: true
 }));
 app.use(cookieParser())

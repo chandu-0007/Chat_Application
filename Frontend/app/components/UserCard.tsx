@@ -2,7 +2,8 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 export default function UserCard({ token }: { token: string | null }) {
-  const API = process.env.API || "https://chat-application-ps2v.onrender.com";
+  const API =
+    process.env.NEXT_PUBLIC_API || "https://chat-application-ps2v.onrender.com";
   type typeuser = {
     username: string,
     email: string,

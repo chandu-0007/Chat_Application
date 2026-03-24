@@ -21,17 +21,17 @@ export default function Dashboard() {
         if (res.data.status) {
           setToken(res.data.token); // or user data
         } else {
-          router.replace("/login");
+          router.replace("/signin");
         }
       } catch {
-        router.replace("/login");
+        router.replace("/signin");
       } finally {
         setLoading(false);
       }
     };
 
     checkAuth();
-  }, []);
+  }, [router]);
 
   if (loading) {
     return <div className="text-white">Loading...</div>;

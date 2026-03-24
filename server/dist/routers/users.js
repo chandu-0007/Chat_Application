@@ -46,8 +46,8 @@ router.post("/register", async (req, res) => {
         const token = jwt.sign({ id: newUser.id }, secret, { expiresIn: "7d" });
         res.cookie("token", token, {
             httpOnly: true,
-            secure: false,
-            sameSite: "lax",
+            secure: true,
+            sameSite: "none",
             maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
         });
         return res.status(201).json({
@@ -101,8 +101,8 @@ router.post("/login", async (req, res) => {
         const token = jwt.sign({ id: Existuser.id }, secret, { expiresIn: "7d" });
         res.cookie("token", token, {
             httpOnly: true,
-            secure: false,
-            sameSite: "lax",
+            secure: true,
+            sameSite: "none",
             maxAge: 7 * 24 * 60 * 60 * 1000
         });
         return res.status(200).json({
@@ -120,7 +120,11 @@ router.post("/login", async (req, res) => {
 // Logout 
 router.get("/logout", (req, res) => {
     try {
-        res.clearCookie("token");
+        res.clearCookie("token", {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+        });
         return res.json({
             status: true,
             message: "Logged out successfully"
@@ -173,18 +177,22 @@ router.post("/reset-password", async (req, res) => {
 router.get("/me", auth, async (req, res) => {
     const userId = req.user;
     try {
-        const userinfo = await prisma.user.findFirst({ where: {
+        const userinfo = await prisma.user.findFirst({
+            where: {
                 id: userId
             },
             select: {
                 username: true,
                 email: true,
                 profileUrl: true
-            } });
+            }
+        });
+        const token = req.cookies.token;
         return res.status(200).json({
             status: true,
             message: "user Information ",
-            userinfo
+            userinfo,
+            token
         });
     }
     catch (err) {

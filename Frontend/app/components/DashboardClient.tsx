@@ -33,6 +33,8 @@ export type NotificationType = {
 }
 
 export default function DashboardClient({ token }: { token: string }) {
+  const API_BASE =
+    process.env.NEXT_PUBLIC_API || "https://chat-application-ps2v.onrender.com";
   const { socket, connectSocket, disconnectSocket } = useSocket();
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const [chats, Setchats] = useState<chatType[]>([]);
@@ -66,7 +68,7 @@ export default function DashboardClient({ token }: { token: string }) {
 
   const createchat = async (username: string) => {
     try {
-      const createchatres = await axios.post("http://localhost:3003/chat/chat-privacy", {
+      const createchatres = await axios.post(`${API_BASE}/chat/chat-privacy`, {
         username: username
       }, {
         withCredentials: true
@@ -88,7 +90,7 @@ export default function DashboardClient({ token }: { token: string }) {
   const AcceptRequest = async (groupId: string, sender: string) => {
     try {
       console.log(groupId, sender)
-      const res = await axios.post("http://localhost:3003/chat/join-group", {
+      const res = await axios.post(`${API_BASE}/chat/join-group`, {
         groupId,
         memberId: sender
       }, {
@@ -133,10 +135,10 @@ export default function DashboardClient({ token }: { token: string }) {
       connectSocket(token);
     }
     const getchats = async () => {
-      const res = await axios.get("http://localhost:3003/chat/getchats", {
+      const res = await axios.get(`${API_BASE}/chat/getchats`, {
         withCredentials: true
       });
-      const users = await axios.get("http://localhost:3003/user", {
+      const users = await axios.get(`${API_BASE}/user`, {
         withCredentials: true
       })
       if (res.status == 200) {
@@ -158,7 +160,7 @@ export default function DashboardClient({ token }: { token: string }) {
 
     //geting the notifications of the uers 
     const getNotifications = async () => {
-      const res = await axios.get("http://localhost:3003/chat/notifications", {
+      const res = await axios.get(`${API_BASE}/chat/notifications`, {
         withCredentials: true
       })
       console.log(res.data.notifications);
@@ -190,8 +192,8 @@ export default function DashboardClient({ token }: { token: string }) {
     })
     try {
       const url = isGroup
-        ? "https://chat-application-ps2v.onrender.com/chat/group-messages/" + id
-        : "https://chat-application-ps2v.onrender.com/chat/messages/" + id;
+        ? `${API_BASE}/chat/group-messages/${id}`
+        : `${API_BASE}/chat/messages/${id}`;
       const response = await axios.get(url, {
         withCredentials: true
       })

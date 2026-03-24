@@ -11,7 +11,7 @@ dotenv.config()
 const app = Express()
 app.use(Express.json())
 app.use(cors({
-  origin: "https://chat-application-taupe-omega.vercel.app/",
+  origin: "https://chat-application-taupe-omega.vercel.app",
   credentials: true
 }));
 app.use(cookieParser())

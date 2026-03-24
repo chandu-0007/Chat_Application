@@ -222,11 +222,13 @@ router.get("/me", auth, async (req: Request, res: Response) => {
         profileUrl: true
       }
     })
+    const token = req.cookies.token;
 
     return res.status(200).json({
       status: true,
       message: "user Information ",
-      userinfo
+      userinfo,
+      token
     })
 
   } catch (err) {

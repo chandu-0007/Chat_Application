@@ -23,7 +23,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     if (socketRef.current) return; // already connected
 
     const host =
-      process.env.NEXT_PUBLIC_API || "http://localhost:3003";
+      process.env.NEXT_PUBLIC_API || "https://chat-application-ps2v.onrender.com";
 
     const s = io(host, {
       auth: { token },

@@ -9,7 +9,7 @@ export default function Login() {
     email: "",
     password: ""
   })
-  const router = useRouter(); 
+  const router = useRouter();
 
   const OnChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     SetsignIn({
@@ -24,7 +24,7 @@ export default function Login() {
       return;
     }
     try {
-      const res = await axios.post("http://localhost:3003/user/login", SignIn, {
+      const res = await axios.post("https://chat-application-ps2v.onrender.com/user/login", SignIn, {
         withCredentials: true
       });
       const data = res.data;
@@ -103,7 +103,7 @@ export default function Login() {
             />
 
             <div className="flex justify-end mb-4">
-              <button 
+              <button
                 onClick={() => router.push("/reset-password")}
                 className="text-sm text-violet-400 hover:text-violet-300 transition-colors"
                 type="button"

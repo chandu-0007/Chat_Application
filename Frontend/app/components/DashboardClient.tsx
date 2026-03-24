@@ -23,14 +23,14 @@ type groupType = {
   description: string;
   _count: { members: number };
 };
- export type NotificationType = {
-   id : string , 
-   text : string , 
-   view  : boolean , 
-   senderId : string   , 
-   type : string , 
-   groupId : string | null 
-  }
+export type NotificationType = {
+  id: string,
+  text: string,
+  view: boolean,
+  senderId: string,
+  type: string,
+  groupId: string | null
+}
 
 export default function DashboardClient({ token }: { token: string }) {
   const { socket, connectSocket, disconnectSocket } = useSocket();
@@ -81,35 +81,35 @@ export default function DashboardClient({ token }: { token: string }) {
       alert("something got an error")
     }
   }
- 
+
   // notificatons state componet
-  const [Requets , SetRequets] = useState<NotificationType[]>([]); 
+  const [Requets, SetRequets] = useState<NotificationType[]>([]);
   //acceps function 
-  const  AcceptRequest  =  async (groupId : string  , sender : string )=>{
-     try{
-      console.log(groupId , sender)
-         const res = await axios.post("http://localhost:3003/chat/join-group",{
-          groupId  , 
-          memberId : sender 
-         } ,  {
-          withCredentials : true , 
-         })
+  const AcceptRequest = async (groupId: string, sender: string) => {
+    try {
+      console.log(groupId, sender)
+      const res = await axios.post("http://localhost:3003/chat/join-group", {
+        groupId,
+        memberId: sender
+      }, {
+        withCredentials: true,
+      })
 
-         alert("successfully joined the group")
-         SetRequets((prevs) =>{
-            for(let i=0 ;i< prevs.length ; i++){
-              if(prevs[i].groupId == groupId && prevs[i].senderId == sender){
-                prevs[i].view = true ; 
-                return prevs;
-              }  
-            } 
-          return prevs; 
+      alert("successfully joined the group")
+      SetRequets((prevs) => {
+        for (let i = 0; i < prevs.length; i++) {
+          if (prevs[i].groupId == groupId && prevs[i].senderId == sender) {
+            prevs[i].view = true;
+            return prevs;
+          }
+        }
+        return prevs;
 
-         })
-     }catch(err){
+      })
+    } catch (err) {
       console.log(err);
-           alert("something went wrong")
-     }
+      alert("something went wrong")
+    }
   }
 
 
@@ -157,17 +157,17 @@ export default function DashboardClient({ token }: { token: string }) {
     // fetch chats when token changes
 
     //geting the notifications of the uers 
-    const getNotifications = async() =>{
-       const  res = await axios.get("http://localhost:3003/chat/notifications" , {
-        withCredentials : true 
-       })
-       console.log(res.data.notifications);
-       if(res.data.status){
-        SetRequets((prevs) => [...prevs ,...res.data.notifications])
-       }
+    const getNotifications = async () => {
+      const res = await axios.get("http://localhost:3003/chat/notifications", {
+        withCredentials: true
+      })
+      console.log(res.data.notifications);
+      if (res.data.status) {
+        SetRequets((prevs) => [...prevs, ...res.data.notifications])
+      }
     }
     getchats();
-    getNotifications(); 
+    getNotifications();
     return () => {
       disconnectSocket();
     };
@@ -189,9 +189,9 @@ export default function DashboardClient({ token }: { token: string }) {
       isGroup
     })
     try {
-      const url = isGroup 
-        ? "http://localhost:3003/chat/group-messages/" + id 
-        : "http://localhost:3003/chat/messages/" + id;
+      const url = isGroup
+        ? "https://chat-application-ps2v.onrender.com/chat/group-messages/" + id
+        : "https://chat-application-ps2v.onrender.com/chat/messages/" + id;
       const response = await axios.get(url, {
         withCredentials: true
       })
@@ -247,7 +247,7 @@ export default function DashboardClient({ token }: { token: string }) {
     console.log(groupName);
     console.log(members);
   }
-  const [Notification , SetNotification]  = useState<boolean>(false);
+  const [Notification, SetNotification] = useState<boolean>(false);
   const [open, setopen] = useState<boolean>(false)
   return (
     <div className="w-screen h-screen bg-[#0f0f0f]  text-white flex">
@@ -262,7 +262,7 @@ export default function DashboardClient({ token }: { token: string }) {
 
             {/* Notification */}
             <button className="cursor-pointer "
-            onClick={() => SetNotification(!Notification)}>
+              onClick={() => SetNotification(!Notification)}>
               <div>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 hover:size-7">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" />
@@ -468,54 +468,54 @@ export default function DashboardClient({ token }: { token: string }) {
 
       {/* Notification Tab */}
       {Notification && (
-  <div className="fixed inset-0 flex justify-center items-center bg-black/60 backdrop-blur-sm z-50">
+        <div className="fixed inset-0 flex justify-center items-center bg-black/60 backdrop-blur-sm z-50">
 
-    {/* Modal */}
-    <div className="w-full max-w-lg h-[520px] bg-[#0f0f13] rounded-2xl shadow-2xl border border-gray-800 flex flex-col overflow-hidden">
+          {/* Modal */}
+          <div className="w-full max-w-lg h-[520px] bg-[#0f0f13] rounded-2xl shadow-2xl border border-gray-800 flex flex-col overflow-hidden">
 
-      {/* Header */}
-      <div className="flex justify-between items-center px-5 py-4 border-b border-gray-800">
-        <h2 className="text-lg font-semibold text-white">
-          Notifications
-        </h2>
+            {/* Header */}
+            <div className="flex justify-between items-center px-5 py-4 border-b border-gray-800">
+              <h2 className="text-lg font-semibold text-white">
+                Notifications
+              </h2>
 
-        <div className="flex gap-4 items-center">
-          <button className="text-sm text-violet-400 hover:text-violet-300 transition">
-            Mark all read
-          </button>
+              <div className="flex gap-4 items-center">
+                <button className="text-sm text-violet-400 hover:text-violet-300 transition">
+                  Mark all read
+                </button>
 
-          <button
-            onClick={() => SetNotification(false)}
-            className="text-gray-400 hover:text-white text-xl transition"
-          >
-            ✕
-          </button>
-        </div>
-      </div>
+                <button
+                  onClick={() => SetNotification(false)}
+                  className="text-gray-400 hover:text-white text-xl transition"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
 
-      {/* Content */}
-      <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
 
-        {Requets.length > 0 ? (
-          Requets.map((each) => (
-            <NotificationCard
-              key={each.id}
-              data={each}
-              onAccept={AcceptRequest}
-              onCancel={(id) => console.log("Cancel", id)}
-            />
-          ))
-        ) : (
-          <div className="h-full flex flex-col items-center justify-center text-gray-500 text-sm">
-            <p>No notifications</p>
+              {Requets.length > 0 ? (
+                Requets.map((each) => (
+                  <NotificationCard
+                    key={each.id}
+                    data={each}
+                    onAccept={AcceptRequest}
+                    onCancel={(id) => console.log("Cancel", id)}
+                  />
+                ))
+              ) : (
+                <div className="h-full flex flex-col items-center justify-center text-gray-500 text-sm">
+                  <p>No notifications</p>
+                </div>
+              )}
+
+            </div>
+
           </div>
-        )}
-
-      </div>
-
-    </div>
-  </div>
-)}
+        </div>
+      )}
     </div>
   );
 }

@@ -10,7 +10,7 @@ export default function ResetPassword() {
     email: "",
     password: ""
   })
-  const router = useRouter(); 
+  const router = useRouter();
 
   const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState<boolean>(false);
@@ -29,7 +29,7 @@ export default function ResetPassword() {
     }
     setError("");
     try {
-      const res = await axios.post("http://localhost:3003/user/reset-password", resetData, {
+      const res = await axios.post("https://chat-application-ps2v.onrender.com/user/reset-password", resetData, {
         withCredentials: true
       });
       const data = res.data;
@@ -105,7 +105,7 @@ export default function ResetPassword() {
                 {error}
               </div>
             )}
-            
+
             {success && (
               <div className="text-md mb-2 text-center text-green-500">
                 Password updated! Redirecting to login...
@@ -115,9 +115,8 @@ export default function ResetPassword() {
             <button
               onClick={OnSubmit}
               disabled={success}
-              className={`w-full py-2 rounded-md font-medium text-black transition-colors ${
-                success ? "bg-green-500" : "bg-white hover:bg-neutral-200"
-              }`}
+              className={`w-full py-2 rounded-md font-medium text-black transition-colors ${success ? "bg-green-500" : "bg-white hover:bg-neutral-200"
+                }`}
             >
               Confirm Reset
             </button>

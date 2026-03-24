@@ -17,7 +17,7 @@ export default function SingUP() {
     email: "",
     password: ""
   });
-  const [Error , SerError] = useState<string>("");
+  const [Error, SerError] = useState<string>("");
   const OnChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     SetSignUp({
       ...SignUP,
@@ -27,12 +27,12 @@ export default function SingUP() {
 
   const OnSubmit = async () => {
     try {
-      if(SignUP.email =="" || SignUP.password == "" || SignUP.username == ""){
-           SerError("please fill all fileds");
-           return ; 
+      if (SignUP.email == "" || SignUP.password == "" || SignUP.username == "") {
+        SerError("please fill all fileds");
+        return;
       }
       const res = await axios.post(
-        "http://localhost:3003/user/register",
+        "https://chat-application-ps2v.onrender.com/user/register",
         {
           username: SignUP.username,
           email: SignUP.email,
@@ -41,13 +41,13 @@ export default function SingUP() {
         { withCredentials: true }
       );
 
-      if(res.data.status){
+      if (res.data.status) {
         alert(res.data.message);
         router.push("dashboard");
-      }else{
+      } else {
         SerError(res.data.message);
       }
-      
+
     } catch (err) {
       alert("something went wrong");
       console.log(err);
@@ -63,8 +63,8 @@ export default function SingUP() {
           {/* GRADIENT LAYER */}
           <div
             className="absolute inset-0  bg-radial-[at_50%_0%] from-purple-400 via-purple-800 to-black "
-          
-            
+
+
           />
 
           {/* CONTENT */}
@@ -82,14 +82,14 @@ export default function SingUP() {
         {/* 🧾 RIGHT SIGNUP FORM */}
         <div className="w-1/2 h-full flex items-center justify-center bg-neutral-900">
           <div className="w-full px-10 text-white">
-               <div className="flex items-center gap-2.5  ">
-            <Image src="/Logo.png" alt="Logo" width={64} height={64}  
-              onClick={()=> redirect("/")}
-             className="w-16  h-16 mb-3 cursor-pointer animate-pulse"/>
-            <h2 className="text-2xl font-semibold mb-6">
-             Register to our Chat.com
-          </h2>
-          </div>
+            <div className="flex items-center gap-2.5  ">
+              <Image src="/Logo.png" alt="Logo" width={64} height={64}
+                onClick={() => redirect("/")}
+                className="w-16  h-16 mb-3 cursor-pointer animate-pulse" />
+              <h2 className="text-2xl font-semibold mb-6">
+                Register to our Chat.com
+              </h2>
+            </div>
             <label className="text-sm">Username</label>
             <input
               type="text"
@@ -119,9 +119,9 @@ export default function SingUP() {
               placeholder="Enter your password"
               className="w-full mt-1 mb-6 px-3 py-2 rounded-md bg-neutral-800 outline-none"
             />
-            {Error != ""   && <div className=" text-md mb-1 mt-0  text-center text-red-400 ">
+            {Error != "" && <div className=" text-md mb-1 mt-0  text-center text-red-400 ">
               {Error}
-              </div>}
+            </div>}
             <button
               onClick={OnSubmit}
               className="w-full bg-white text-black py-2 rounded-md font-medium hover:bg-neutral-200"

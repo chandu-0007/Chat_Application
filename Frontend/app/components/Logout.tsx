@@ -5,7 +5,7 @@ const Logout = () => {
   const logoutfunction = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3003/user/logout",
+        "https://chat-application-ps2v.onrender.com/user/logout",
         { withCredentials: true }
       );
 
@@ -21,8 +21,8 @@ const Logout = () => {
   return (
     <>
       <button
-       className="w-full text-left px-4 py-2 text-sm text-red-500  hover:bg-neutral-700 "
-      onClick={logoutfunction}>
+        className="w-full text-left px-4 py-2 text-sm text-red-500  hover:bg-neutral-700 "
+        onClick={logoutfunction}>
         Logout
       </button>
     </>

@@ -27,7 +27,7 @@ type groupType = {
    id : string , 
    text : string , 
    view  : boolean , 
-   sender : string   , 
+   senderId : string   , 
    type : string , 
    groupId : string | null 
   }
@@ -38,8 +38,14 @@ export default function DashboardClient({ token }: { token: string }) {
   const [chats, Setchats] = useState<chatType[]>([]);
   const [currentUser, SetCurrentUser] = useState<{
     chatId: string,
-    chatName: string
+    chatName: string,
+    isGroup?: boolean
   }>();
+
+  const [joinedGroups, setJoinedGroups] = useState<{
+    groupId: string;
+    groupName: string;
+  }[]>([]);
 
   // all groups 
   const [Groups, SetGroups] = useState<groupType[]>();
@@ -79,11 +85,12 @@ export default function DashboardClient({ token }: { token: string }) {
   // notificatons state componet
   const [Requets , SetRequets] = useState<NotificationType[]>([]); 
   //acceps function 
-  const  AcceptRequest  =  async (groupId : string  , memberId : string )=>{
+  const  AcceptRequest  =  async (groupId : string  , sender : string )=>{
      try{
-         const res = await axios.post("http:localhost:3003/chat/join-group",{
+      console.log(groupId , sender)
+         const res = await axios.post("http://localhost:3003/chat/join-group",{
           groupId  , 
-          memberId
+          memberId : sender 
          } ,  {
           withCredentials : true , 
          })
@@ -91,7 +98,7 @@ export default function DashboardClient({ token }: { token: string }) {
          alert("successfully joined the group")
          SetRequets((prevs) =>{
             for(let i=0 ;i< prevs.length ; i++){
-              if(prevs[i].groupId == groupId && prevs[i].sender == memberId){
+              if(prevs[i].groupId == groupId && prevs[i].senderId == sender){
                 prevs[i].view = true ; 
                 return prevs;
               }  
@@ -138,6 +145,13 @@ export default function DashboardClient({ token }: { token: string }) {
       if (res.data?.status) {
         // assume res.data.ListOFchats is an array of chats; append them
         Setchats((prevs) => [...prevs, ...res.data.ListOFchats]);
+        if (res.data.GroupChats) {
+          const formattedGroups = res.data.GroupChats.map((g: any) => ({
+            groupId: g.groupId,
+            groupName: g.group.name
+          }));
+          setJoinedGroups(formattedGroups);
+        }
       }
     };
     // fetch chats when token changes
@@ -162,19 +176,23 @@ export default function DashboardClient({ token }: { token: string }) {
 
 
   //fetch the messages 
-  const getmessgaes = async (chatId: string, chatName: string) => {
+  const getmessgaes = async (id: string, name: string, isGroup: boolean = false) => {
     Settogglemsg(true);
     SetToggleGroupInfo(false);
-    if (!chatId || !chatName) {
+    if (!id || !name) {
       alert("something went worng ")
       return;
     }
     SetCurrentUser({
-      chatId: chatId,
-      chatName
+      chatId: id,
+      chatName: name,
+      isGroup
     })
     try {
-      const response = await axios.get("http://localhost:3003/chat/messages/" + chatId, {
+      const url = isGroup 
+        ? "http://localhost:3003/chat/group-messages/" + id 
+        : "http://localhost:3003/chat/messages/" + id;
+      const response = await axios.get(url, {
         withCredentials: true
       })
 
@@ -187,26 +205,41 @@ export default function DashboardClient({ token }: { token: string }) {
   }
 
   useEffect(() => {
-    socket?.on("message", (data) => {
+    const messageHandler = (data: any) => {
       SetMessages((prevs) => [...prevs, { text: data.text, sentByUser: false }])
-    })
+    };
 
+    socket?.on("message", messageHandler);
+    socket?.on("group-chat", messageHandler);
+
+    return () => {
+      socket?.off("message", messageHandler);
+      socket?.off("group-chat", messageHandler);
+    }
   }, [socket])
 
   const SendMsg = () => {
-    const sendPlayLoad = {
-      text: inputmsg,
-      chatId: currentUser?.chatId,
-      chatName: currentUser?.chatName
-    }
-    socket?.emit("message", sendPlayLoad);
-    if (inputmsg != "") {
-      SetMessages((prev) => [...prev, {
+    if (inputmsg.trim() === "") return;
+
+    if (currentUser?.isGroup) {
+      const sendPlayLoad = {
         text: inputmsg,
-        sentByUser: true
+        groupId: currentUser?.chatId,
       }
-      ])
+      socket?.emit("group-chat", sendPlayLoad);
+    } else {
+      const sendPlayLoad = {
+        text: inputmsg,
+        chatId: currentUser?.chatId,
+        chatName: currentUser?.chatName
+      }
+      socket?.emit("message", sendPlayLoad);
     }
+
+    SetMessages((prev) => [...prev, {
+      text: inputmsg,
+      sentByUser: true
+    }])
     setinputmsg("");
   }
 
@@ -304,8 +337,29 @@ export default function DashboardClient({ token }: { token: string }) {
             onClick={GetGroupInfo}
             className="mt-4 px-3 py-2 rounded-lg hover:bg-neutral-800 cursor-pointer font-semibold"
           >
-            Groups
+            Explore Public Groups
           </div>
+
+          <div className="px-3 text-sm font-semibold text-neutral-400 mt-2 mb-1">
+            Your Groups
+          </div>
+          {joinedGroups.map((g, index) => (
+            <div
+              key={index}
+              onClick={() => getmessgaes(g.groupId, g.groupName, true)}
+              className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-neutral-800 cursor-pointer transition"
+            >
+              <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center font-semibold">
+                {g.groupName?.charAt(0).toUpperCase()}
+              </div>
+
+              <div className="flex flex-col">
+                <span className="text-sm font-medium">
+                  {g.groupName}
+                </span>
+              </div>
+            </div>
+          ))}
 
           {/* USERS */}
           <div className="px-3 text-lg font-serif  mt-2">

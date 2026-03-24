@@ -42,7 +42,7 @@ export default function NotificationCard({
       {isRequest && (
         <div className="flex items-center gap-2">
           <button
-            onClick={() => onAccept(data.groupId ! , data.sender)}
+            onClick={() => onAccept(data.groupId ! , data.senderId)}
             className="px-4 py-1.5 text-sm rounded-lg bg-violet-600 hover:bg-violet-700 transition-all duration-200"
           >
             Accept

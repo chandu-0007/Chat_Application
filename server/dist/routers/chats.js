@@ -127,6 +127,37 @@ router.get("/messages/:chatId", async (req, res) => {
         });
     }
 });
+router.get("/group-messages/:groupId", async (req, res) => {
+    const userId = req.user;
+    const groupId = req.params.groupId;
+    if (!groupId)
+        return res.status(400).json({ message: "groupId is required", status: false });
+    try {
+        const message = await prisma.message.findMany({
+            where: {
+                groupId: groupId
+            },
+            select: {
+                senderId: true,
+                text: true,
+            }
+        });
+        const messages = message.map((each) => ({
+            text: each.text,
+            sentByUser: each.senderId === userId
+        }));
+        return res.status(200).json({
+            status: true,
+            messages
+        });
+    }
+    catch (err) {
+        return res.status(500).json({
+            message: "server error",
+            status: false
+        });
+    }
+});
 router.get("/groups", async (req, res) => {
     try {
         const cursor = req.query.cursor

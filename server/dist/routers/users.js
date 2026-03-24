@@ -133,16 +133,40 @@ router.get("/logout", (req, res) => {
         });
     }
 });
-router.put("/profile", async (req, res) => {
-    const { email, newpassword } = req.body;
-    if (!email && !newpassword)
-        return res.status(401).json({
+router.post("/reset-password", async (req, res) => {
+    const { email, password } = req.body;
+    if (!email || !password) {
+        return res.status(400).json({
             status: false,
-            message: " "
+            message: "Email and new password are required"
         });
+    }
     try {
+        const user = await prisma.user.findUnique({
+            where: { email: email }
+        });
+        if (!user) {
+            return res.status(404).json({
+                status: false,
+                message: "User not found"
+            });
+        }
+        const hashedPassword = await bcrypt.hash(password, 10);
+        await prisma.user.update({
+            where: { email: email },
+            data: { passwordHash: hashedPassword }
+        });
+        return res.status(200).json({
+            status: true,
+            message: "Password reset successful"
+        });
     }
     catch (err) {
+        console.log(err);
+        return res.status(500).json({
+            status: false,
+            message: "Internal server error"
+        });
     }
 });
 // get userinfo 

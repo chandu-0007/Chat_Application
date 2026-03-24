@@ -1,5 +1,5 @@
 import { Router } from "express";
-import type{Request , Response} from "express"
+import type { Request, Response } from "express"
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
@@ -45,12 +45,12 @@ router.post("/register", async (req: Request, res: Response) => {
     const newUser = await prisma.user.create({
       data: {
         username: username,
-           passwordHash :  hashedPassword,
+        passwordHash: hashedPassword,
         email: email
       }
     });
 
-    const secret = process.env.JWT_SECRET ;
+    const secret = process.env.JWT_SECRET;
     console.log(secret);
     if (!secret) {
       return res.status(500).json({
@@ -63,7 +63,7 @@ router.post("/register", async (req: Request, res: Response) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     });
@@ -130,7 +130,7 @@ router.post("/login", async (req: Request, res: Response) => {
     const token = jwt.sign({ id: Existuser.id }, secret, { expiresIn: "7d" });
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
@@ -150,15 +150,15 @@ router.post("/login", async (req: Request, res: Response) => {
 // Logout 
 router.get("/logout", (req: Request, res: Response) => {
   try {
-      res.clearCookie("token");
-  return res.json({
-    status: true,
-    message: "Logged out successfully"
-  });
+    res.clearCookie("token");
+    return res.json({
+      status: true,
+      message: "Logged out successfully"
+    });
   } catch (error) {
     return res.json({
-      status : false , 
-      message : "internal server errot"
+      status: false,
+      message: "internal server errot"
     })
   }
 });
@@ -209,52 +209,54 @@ router.post("/reset-password", async (req: Request, res: Response) => {
 
 
 // get userinfo 
-router.get("/me" ,auth, async (req  : Request , res : Response) =>{
-  const userId = req.user ; 
-  try{
-    const userinfo = await prisma.user.findFirst({where : {
-      id : userId !
-    } , 
-  select :{
-    username : true , 
-    email : true , 
-    profileUrl : true 
-  }})
-    
-    return res.status(200).json({
-      status : true , 
-      message :"user Information " , 
-      userinfo 
+router.get("/me", auth, async (req: Request, res: Response) => {
+  const userId = req.user;
+  try {
+    const userinfo = await prisma.user.findFirst({
+      where: {
+        id: userId!
+      },
+      select: {
+        username: true,
+        email: true,
+        profileUrl: true
+      }
     })
 
-  }catch(err){
-   return  res.json({
-      status : false , 
-      message : "server error "
+    return res.status(200).json({
+      status: true,
+      message: "user Information ",
+      userinfo
+    })
+
+  } catch (err) {
+    return res.json({
+      status: false,
+      message: "server error "
     })
   }
 })
 
-router.get("/",auth, async (req: Request, res: Response) => {
-    try{
-      const allusers = await prisma.user.findMany({
-        where :{
-        },
-        select:{
-          username: true, 
-          profileUrl:true 
-        }
-      })
-      return res.status(200).json({
-         allusers,
-         message : "list of users "
-      })
-    }catch(err){
-        return res.status(500).json({
-          message : "internal server error"
-        })
-    }
-  });
+router.get("/", auth, async (req: Request, res: Response) => {
+  try {
+    const allusers = await prisma.user.findMany({
+      where: {
+      },
+      select: {
+        username: true,
+        profileUrl: true
+      }
+    })
+    return res.status(200).json({
+      allusers,
+      message: "list of users "
+    })
+  } catch (err) {
+    return res.status(500).json({
+      message: "internal server error"
+    })
+  }
+});
 
 
 export default router;

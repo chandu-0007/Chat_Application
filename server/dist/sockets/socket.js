@@ -7,9 +7,14 @@ const prisma = new PrismaClient();
 //online users 
 const onlineUser = new Map();
 export default function socketlogic(server) {
+    const allowedOrigins = [
+        process.env.FRONTEND_URL,
+        "https://chat-application-taupe-omega.vercel.app",
+        "http://localhost:3000",
+    ].filter(Boolean);
     const io = new Server(server, {
         cors: {
-            origin: "http://localhost:3000",
+            origin: allowedOrigins,
             credentials: true
         }
     });

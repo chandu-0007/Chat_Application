@@ -10,9 +10,15 @@ const prisma = new PrismaClient()
 const onlineUser = new Map<string, IOSocket>()
 
 export default function socketlogic(server: HttpServer) {
+    const allowedOrigins = [
+        process.env.FRONTEND_URL,
+        "https://chat-application-taupe-omega.vercel.app",
+        "http://localhost:3000",
+    ].filter(Boolean) as string[];
+
     const io = new Server(server, {
         cors: {
-            origin: "http://localhost:3000",
+            origin: allowedOrigins,
             credentials: true
         }
     })

@@ -29,6 +29,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       auth: { token },
       withCredentials: true,
       autoConnect: true,
+      transports: ["websocket"],
     });
 
     socketRef.current = s;
